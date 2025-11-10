@@ -1,0 +1,20 @@
+{
+    "manifest_version": 3,
+    "name": "Resize Active Window",
+    "version": "1.0",
+    "permissions": [
+        "windows",
+        "storage"
+    ],
+    "action": {
+        "default_popup": "index.html",
+        "default_title": "Resize Window"
+    },
+    "icons": {
+        "16": "icon-16x16.png",
+        "32": "icon-32x32.png",
+        "48": "icon-48x48.png",
+        "128": "icon-128x128.png"
+    },
+    "description": "Resize the active window to predefined sizes."
+}
