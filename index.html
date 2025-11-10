@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <style>
+            body {
+                font-family: sans-serif;
+                margin: 10px;
+            }
+
+            .preset {
+                margin: 5px 0;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="presets"></div>
+        <button id="settings">⚙ 設定</button>
+
+        <div id="settingsPanel" style="display:none;">
+            <h3>プリセット追加</h3>
+            幅: <input id="width" type="number" value="800"><br>
+            高さ: <input id="height" type="number" value="600"><br>
+            <button id="addPreset">追加</button>
+            <div id="presetList"></div>
+            <button id="back">戻る</button>
+        </div>
+
+        <script src="popup.js"></script>
+    </body>
+
+</html>

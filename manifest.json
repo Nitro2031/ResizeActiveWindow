@@ -1,0 +1,13 @@
+{
+    "manifest_version": 3,
+    "name": "Resize Active Window",
+    "version": "1.0",
+    "permissions": [
+        "windows",
+        "storage"
+    ],
+    "action": {
+        "default_popup": "index.html",
+        "default_title": "Resize Window"
+    }
+}
