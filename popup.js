@@ -6,19 +6,23 @@
  */
 function renderPresets() {
     chrome.storage.local.get({ presets: [] }, (data) => {
-        const container = document.getElementById("presets");
-        container.innerHTML = "";
-        data.presets.forEach((parameter) => {
-            const presetBtn = document.createElement("button");
-            presetBtn.textContent = `${parameter.width}x${parameter.height}`;
-            presetBtn.className = "preset";
-            presetBtn.onclick = () => {
-                chrome.windows.getCurrent({}, (window) => {
-                    chrome.windows.update(window.id, { width: parameter.width, height: parameter.height });
-                });
-            };
-            container.appendChild(presetBtn);
-        });
+        if (data.presets.length === 0) {
+            chrome.storage.local.set({ presets: [{ width: 800, height: 600 }] }, renderPresets);
+        } else {
+            const container = document.getElementById("presets");
+            container.innerHTML = "";
+            data.presets.forEach((parameter) => {
+                const presetBtn = document.createElement("button");
+                presetBtn.textContent = `${parameter.width}x${parameter.height}`;
+                presetBtn.className = "preset";
+                presetBtn.onclick = () => {
+                    chrome.windows.getCurrent({}, (window) => {
+                        chrome.windows.update(window.id, { width: parameter.width, height: parameter.height });
+                    });
+                };
+                container.appendChild(presetBtn);
+            });
+        }
     });
 }
 
