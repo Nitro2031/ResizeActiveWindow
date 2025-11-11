@@ -17,7 +17,14 @@ function renderPresets() {
                 presetBtn.className = "preset";
                 presetBtn.onclick = () => {
                     chrome.windows.getCurrent({}, (window) => {
-                        chrome.windows.update(window.id, { width: parameter.width, height: parameter.height });
+                        const newLeft = screen.availWidth - parameter.width;
+                        chrome.windows.update(
+                            window.id,
+                            {
+                                width: parameter.width,
+                                height: parameter.height,
+                                left: newLeft
+                            });
                     });
                 };
                 container.appendChild(presetBtn);
