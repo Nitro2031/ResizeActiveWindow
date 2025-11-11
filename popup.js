@@ -17,7 +17,7 @@ function renderPresets() {
                 presetBtn.className = "preset";
                 presetBtn.onclick = () => {
                     chrome.windows.getCurrent({}, (window) => {
-                        const newLeft = screen.availWidth - parameter.width;
+                        const newLeft = window.left + window.width - parameter.width;
                         chrome.windows.update(
                             window.id,
                             {
