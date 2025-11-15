@@ -12,11 +12,11 @@ When you press the button for a preset size you've set, the window size will cha
 Added presets will be saved in the browser.
 
 
-ブラウザウィンドウを事前定義されたサイズに変更します。
+ブラウザウィンドウをあらかじめ設定されたサイズに変更します。
 
-拡張アイコンをクリックするとポップアップUIを表示します。
+拡張機能アイコンをクリックするとポップアップUIを表示します。
 
-設定ボタンでプリセットサイズの設定画面を表示します。
+Settingsボタンでプリセットサイズの設定画面を表示します。
 
 プリセットサイズは任意に追加したり削除したりできます。
 
