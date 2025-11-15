@@ -129,12 +129,49 @@ document.getElementById("addPreset").onclick = (e) => {
  * @returns {void}
  */
 function updateWindowInfo() {
+    let contentText = `- × -`;
     chrome.windows.getCurrent({}, (win) => {
-        document.getElementById("currentSize").textContent =
+        contentText =
             `Size: ${win.width} × ${win.height}`;
+        document.getElementById("currentSize").textContent = contentText;
         document.getElementById("currentPosition").textContent =
             `Position: ${win.left} × ${win.top}`;
     });
+
+    // タブの表示領域サイズ
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]) {
+            const url = tabs[0].url || "";
+            testText(url);
+
+            if (url.startsWith("chrome://") || url.startsWith("about:")) {
+                // 内部ページはスクリプト注入不可 → 表示領域サイズは取得しない
+                contentText += " | Content: (not accessible)";
+            } else {
+                chrome.scripting.executeScript({
+                    target: { tabId: tabs[0].id },
+                    func: () => {
+                        return { w: window.innerWidth, h: window.innerHeight };
+                    }
+                }, (results) => {
+                    if (results && results[0] && results[0].result) {
+                        const { w, h } = results[0].result;
+                        contentText += " | " + `${w} × ${h}`;
+                    }
+                    // ← 結果が返ってきたタイミングで更新
+                    document.getElementById("currentSize").textContent = contentText;
+                });
+            }
+        }
+    });
+}
+
+/** Test function to display text in the popup
+ * @param {string} textContent - text to display
+ * @returns {void}
+ */
+function testText(textContent) {
+    //document.getElementById("testText").textContent = textContent;
 }
 
 /** Main function to initialize the popup
