@@ -48,60 +48,18 @@
         <link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png">
         <link rel="manifest" href="/manifest.json">
 
-        <style>
-            body {
-                margin: 10px;
-            }
-
-            button {
-                padding: 5px 10px;
-                margin: 5px;
-                white-space: nowrap;
-            }
-
-            #back {
-                float: right;
-            }
-
-            #presets {
-                margin: 5px 0;
-                text-align: center;
-            }
-
-            input[type="number"] {
-                width: 50px;
-            }
-
-            table {
-                border-collapse: collapse;
-                border: 1px solid black;
-                /* 外枠 */
-            }
-
-            th,
-            td {
-                border-top: 1px solid black;
-                /* 横線は実線 */
-                border-left: 1px dotted black;
-                /* 縦線は点線 */
-                padding: 4px;
-                /* 内側の余白調整 */
-                text-align: center;
-            }
-
-            .highlight {
-                background-color: black;
-                color: white;
-                transition: background-color 0.5s, color 0.5s;
-            }
-        </style>
+        <link rel="stylesheet" href="index.css" />
     </head>
 
     <body>
+        <div id="testText"></div>
+        <span id="currentPosition"> Position: - × - </span>
+        <span id="currentSize"> Size: - × - </span>
         <div id="presets"></div>
         <hr />
-        <button id="settings"> ⚙ Settings</button>
-
+        <div id="btn">
+            <button id="settings"> ⚙ Settings</button>
+        </div>
         <div id="settingsPanel" style="display:none;">
             <h2>
                 <span>⚙ Settings</span>
@@ -124,6 +82,8 @@
                 <tbody id="presetList"></tbody>
                 </tbody>
             </table>
+            <div id="version">
+            </div>
         </div>
 
         <script src="popup.js"></script>

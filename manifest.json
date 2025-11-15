@@ -1,10 +1,12 @@
 {
     "manifest_version": 3,
-    "name": "Resize Active Window",
-    "version": "1.1",
+    "name": "Resize Active Window アクティブなブラウザウィンドウのサイズを変更",
+    "version": "1.2",
     "permissions": [
         "windows",
-        "storage"
+        "storage",
+        "activeTab",
+        "scripting"
     ],
     "action": {
         "default_popup": "index.html",
@@ -16,5 +18,5 @@
         "48": "icon-48x48.png",
         "128": "icon-128x128.png"
     },
-    "description": "Resize the active window to predefined sizes."
+    "description": "Resize the active window to predefined sizes. アクティブなウィンドウを事前定義されたサイズに変更します。"
 }

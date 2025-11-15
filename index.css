@@ -1,0 +1,57 @@
+body {
+    margin: 10px;
+}
+
+button {
+    padding: 5px 10px;
+    margin: 5px;
+    white-space: nowrap;
+}
+
+#back {
+    float: right;
+}
+
+#presets,
+#btn {
+    margin: 5px 0;
+    text-align: center;
+}
+
+#currentPosition,
+#currentSize,
+#version,
+#testText {
+    display: block;
+    margin-bottom: 5px;
+    font-size: small;
+    white-space: nowrap;
+    text-align: right;
+}
+
+input[type="number"] {
+    width: 50px;
+}
+
+table {
+    border-collapse: collapse;
+    border: 1px solid black;
+    /* 外枠 */
+}
+
+th,
+td {
+    border-top: 1px solid black;
+    /* 横線は実線 */
+    border-left: 1px dotted black;
+    /* 縦線は点線 */
+    padding: 4px;
+    /* 内側の余白調整 */
+    text-align: center;
+}
+
+.highlight {
+    background-color: black;
+    color: white;
+    transition: background-color 0.5s, color 0.5s;
+}
