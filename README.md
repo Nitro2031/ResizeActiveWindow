@@ -23,3 +23,24 @@ Added presets will be saved in the browser.
 設定したプリセットサイズのボタンを押すと、そのウィンドウのサイズが設定したサイズへ変更されます。
 
 追加したプリセットはブラウザに保存されます。
+
+Version 1.2
+
+ A function has been added to obtain and display the window position, window size, content display area size, extension name, and extension version.
+
+　ウィンドウの位置、ウィンドウサイズ、コンテンツ表示領域のサイズ、拡張機能名、拡張機能バージョンを取得して表示する機能を追加しました。
+
+
+Version 1.1
+
+ The window now resizes while the top right corner is fixed.
+
+ Added a function to add new lines when pressing the Enter key.
+
+ Added lines are now highlighted.
+
+　ウィンドウの右上隅を固定したまま、ウィンドウのサイズを変更するようになりました。
+
+　Enterキーを押した際にもプリセット追加する機能を追加しました。
+
+　追加した行がハイライト表示されるようになりました。
