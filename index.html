@@ -98,6 +98,14 @@
     </head>
 
     <body>
+        <span
+            id="currentPosition"
+            style="white-space: nowrap;
+                font-size: small;"> Position: - × - </span>
+        <span
+            id="currentSize"
+            style="white-space: nowrap;
+                font-size: small;"> Size: - × - </span>
         <div id="presets"></div>
         <hr />
         <button id="settings"> ⚙ Settings</button>
@@ -124,6 +132,13 @@
                 <tbody id="presetList"></tbody>
                 </tbody>
             </table>
+            <div
+                id="version"
+                style="margin-top:10px;
+                    font-size:small;
+                    color:gray;
+                    white-space: nowrap;">
+            </div>
         </div>
 
         <script src="popup.js"></script>

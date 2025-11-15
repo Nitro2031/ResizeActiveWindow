@@ -125,4 +125,28 @@ document.getElementById("addPreset").onclick = (e) => {
     addPreset();
 };
 
-renderPresets();
+/** Update and display current window size and position
+ * @returns {void}
+ */
+function updateWindowInfo() {
+    chrome.windows.getCurrent({}, (win) => {
+        document.getElementById("currentSize").textContent =
+            `Size: ${win.width} × ${win.height}`;
+        document.getElementById("currentPosition").textContent =
+            `Position: ${win.left} × ${win.top}`;
+    });
+}
+
+/** Main function to initialize the popup
+ * @returns {void}
+ */
+function main() {
+    updateWindowInfo();
+    chrome.windows.onBoundsChanged.addListener(updateWindowInfo);
+    renderPresets();
+    // バージョン情報の表示
+    const manifest = chrome.runtime.getManifest();
+    document.getElementById("version").textContent = `${manifest.name} Version: ${manifest.version}`;
+}
+
+main();
