@@ -12,7 +12,7 @@ When you press the button for a preset size you've set, the window size will cha
 Added presets will be saved in the browser.
 
 
-ブラウザウィンドウをプリセットサイズに変更します。
+ブラウザウィンドウを事前定義されたサイズに変更します。
 
 拡張アイコンをクリックするとポップアップUIを表示します。
 
@@ -28,7 +28,7 @@ Version 1.2
 
  A function has been added to obtain and display the window position, window size, content display area size, extension name, and extension version.
 
-　ウィンドウの位置、ウィンドウサイズ、コンテンツ表示領域のサイズ、拡張機能名、拡張機能バージョンを取得して表示する機能を追加しました。
+　ウィンドウの位置、ウィンドウサイズ、コンテンツ表示領域のサイズ、拡張機能アプリケーション名、アプリケーションバージョンを取得して表示する機能を追加しました。
 
 
 Version 1.1
