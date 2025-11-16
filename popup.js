@@ -100,6 +100,7 @@ document.getElementById("presetForm").addEventListener("submit", (e) => {
  * @returns {void}
  */
 document.getElementById("settings").onclick = () => {
+    document.getElementById("moveButtons").style.display = "none";
     document.getElementById("presets").style.display = "none";
     document.getElementById("btn").style.display = "none";
     document.getElementById("settingsPanel").style.display = "block";
@@ -110,6 +111,7 @@ document.getElementById("settings").onclick = () => {
  * @returns {void}
  */
 document.getElementById("back").onclick = () => {
+    document.getElementById("moveButtons").style.display = "block";
     document.getElementById("presets").style.display = "block";
     document.getElementById("btn").style.display = "block";
     document.getElementById("settingsPanel").style.display = "none";
@@ -142,7 +144,7 @@ function updateWindowInfo() {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs[0]) {
             const url = tabs[0].url || "";
-            testText(url);
+            //testText(url);
 
             if (url.startsWith("chrome://") || url.startsWith("about:")) {
                 // 内部ページはスクリプト注入不可 → 表示領域サイズは取得しない
@@ -166,12 +168,63 @@ function updateWindowInfo() {
     });
 }
 
+/** Display the current display size
+ * @returns {void}
+ */
+function showDisplaySize() {
+    chrome.system.display.getInfo((displays) => {
+        testText({ displays });
+        if (displays && displays.length > 0) {
+            // 現在のメインディスプレイを取得
+            const primary = displays.find(d => d.isPrimary) || displays[0];
+            const width = primary.bounds.width;
+            const height = primary.bounds.height;
+            testText({ primary, width, height });
+
+            document.getElementById("displaySize").textContent =
+                `Display: ${width} × ${height}`;
+        }
+    });
+}
+
+/** Move the current window to a specified position
+ * @param {string} position - "left", "right", "top", or "bottom"
+ * @returns {void}
+ */
+function moveWindow(position) {
+    chrome.windows.getCurrent({}, (window) => {
+        const screenWidth = screen.availWidth;
+        const screenHeight = screen.availHeight;
+        let newLeft = window.left;
+        let newTop = window.top;
+        switch (position) {
+            case "left":
+                newLeft = 0;
+                break;
+            case "right":
+                newLeft = screenWidth - window.width;
+                break;
+            case "top":
+                newTop = 0;
+                break;
+            case "bottom":
+                newTop = screenHeight - window.height;
+                break;
+        }
+
+        chrome.windows.update(window.id, {
+            left: newLeft,
+            top: newTop
+        });
+    });
+}
+
 /** Test function to display text in the popup
  * @param {string} textContent - text to display
  * @returns {void}
  */
 function testText(textContent) {
-    //document.getElementById("testText").textContent = textContent;
+    document.getElementById("testText").textContent = textContent;
 }
 
 /** Main function to initialize the popup
@@ -181,9 +234,16 @@ function main() {
     updateWindowInfo();
     chrome.windows.onBoundsChanged.addListener(updateWindowInfo);
     renderPresets();
+
+    // ボタンイベント登録
+    document.getElementById("moveLeft").onclick = () => moveWindow("left");
+    document.getElementById("moveRight").onclick = () => moveWindow("right");
+    document.getElementById("moveTop").onclick = () => moveWindow("top");
+    document.getElementById("moveBottom").onclick = () => moveWindow("bottom");
+
     // バージョン情報の表示
     const manifest = chrome.runtime.getManifest();
-    document.getElementById("version").textContent = `${manifest.name} Version: ${manifest.version}`;
+    document.getElementById("version").textContent = `${manifest.action.default_title} Version: ${manifest.version}`;
 }
 
 main();
