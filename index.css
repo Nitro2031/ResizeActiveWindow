@@ -1,20 +1,14 @@
 body {
-    margin: 10px;
+    margin: 8px;
 }
 
 button {
-    padding: 5px 10px;
-    margin: 5px;
+    padding: 4px 8px;
+    margin: 4px;
     white-space: nowrap;
 }
 
 #back {
-    float: right;
-}
-
-#presets,
-#btn {
-    margin: 5px 0;
     text-align: center;
 }
 
@@ -23,31 +17,34 @@ button {
 #currentSize,
 #version,
 #testText {
-    display: block;
-    margin-bottom: 5px;
     font-size: small;
     white-space: nowrap;
-    text-align: right;
+    text-align: center;
 }
 
 input[type="number"] {
-    width: 50px;
+    width: 56px;
 }
 
 table {
     border-collapse: collapse;
-    border: 1px solid black;
+
     /* 外枠 */
+    border: 1px solid black;
+
+    width: 100%;
 }
 
 th,
 td {
-    border-top: 1px solid black;
     /* 横線は実線 */
-    border-left: 1px dotted black;
+    border-top: 1px solid black;
+
     /* 縦線は点線 */
-    padding: 4px;
+    border-left: 1px dotted black;
+
     /* 内側の余白調整 */
+    padding: 4px;
     text-align: center;
 }
 

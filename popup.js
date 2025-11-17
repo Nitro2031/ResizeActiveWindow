@@ -7,13 +7,21 @@
 function renderPresets() {
     chrome.storage.local.get({ presets: [] }, (data) => {
         if (data.presets.length === 0) {
-            chrome.storage.local.set({ presets: [{ width: 800, height: 600 }] }, renderPresets);
+            chrome.storage.local.set(
+                {
+                    presets: [{
+                        width: 800,
+                        height: 600
+                    }]
+                },
+                renderPresets
+            );
         } else {
             const container = document.getElementById("presets");
             container.innerHTML = "";
             data.presets.forEach((parameter) => {
                 const presetBtn = document.createElement("button");
-                presetBtn.textContent = `${parameter.width}x${parameter.height}`;
+                presetBtn.textContent = `${parameter.width} × ${parameter.height}`;
                 presetBtn.className = "preset";
                 presetBtn.onclick = () => {
                     chrome.windows.getCurrent({}, (window) => {
@@ -27,7 +35,18 @@ function renderPresets() {
                             });
                     });
                 };
-                container.appendChild(presetBtn);
+                const tdPreset = document.createElement("td");
+                tdPreset.appendChild(presetBtn);
+                const deleteBtn = document.createElement("button");
+                deleteBtn.textContent = " 🗑️ Delete";
+                deleteBtn.disabled = true;
+                const tdDelete = document.createElement("td");
+                tdDelete.appendChild(deleteBtn);
+                const tr = document.createElement("tr");
+                tr.appendChild(tdPreset);
+                tr.appendChild(tdDelete);
+                container.appendChild(tr);
+                console.log({ tr });
             });
         }
     });
@@ -41,10 +60,8 @@ function renderSettings(highlightIndex = null) {
         const listRow = document.getElementById("presetList");
         listRow.innerHTML = "";
         data.presets.forEach((p, i) => {
-            const tdWidth = document.createElement("td");
-            tdWidth.textContent = p.width;
-            const tdHeight = document.createElement("td");
-            tdHeight.textContent = p.height;
+            const td = document.createElement("td");
+            td.textContent = p.width + " × " + p.height;
             const tdDelete = document.createElement("td");
             const deleteBtn = document.createElement("button");
             deleteBtn.textContent = " 🗑️ Delete";
@@ -55,13 +72,13 @@ function renderSettings(highlightIndex = null) {
             tdDelete.appendChild(deleteBtn);
 
             const tr = document.createElement("tr");
-            tr.appendChild(tdWidth);
-            tr.appendChild(tdHeight);
+            tr.appendChild(td);
             tr.appendChild(tdDelete);
             listRow.appendChild(tr);
+            console.log("Settings: ", { tr });
 
             // 直近追加された行をハイライト
-            if (highlightIndex === i) {
+            if (i === highlightIndex) {
                 tr.classList.add("highlight");
                 setTimeout(() => {
                     tr.classList.remove("highlight");
@@ -88,56 +105,18 @@ function addPreset() {
     });
 }
 
-/** フォーム全体で Enter キーを拾う
- * @returns {void}
- */
-document.getElementById("presetForm").addEventListener("submit", (e) => {
-    e.preventDefault(); // デフォルトの送信動作を防止
-    addPreset();
-});
-
-/** Handle settings button click
- * @returns {void}
- */
-document.getElementById("settings").onclick = () => {
-    document.getElementById("moveButtons").style.display = "none";
-    document.getElementById("presets").style.display = "none";
-    document.getElementById("btn").style.display = "none";
-    document.getElementById("settingsPanel").style.display = "block";
-    renderSettings();
-};
-
-/** Handle back button click
- * @returns {void}
- */
-document.getElementById("back").onclick = () => {
-    document.getElementById("moveButtons").style.display = "block";
-    document.getElementById("presets").style.display = "block";
-    document.getElementById("btn").style.display = "block";
-    document.getElementById("settingsPanel").style.display = "none";
-    renderPresets();
-};
-
-/** Handle add preset button click
- * Add ボタンのクリックでも呼び出し
- * @returns {void}
- */
-document.getElementById("addPreset").onclick = (e) => {
-    e.preventDefault(); // フォーム送信を防止
-    addPreset();
-};
-
 /** Update and display current window size and position
  * @returns {void}
  */
 function updateWindowInfo() {
     let contentText = `- × -`;
-    chrome.windows.getCurrent({}, (win) => {
-        contentText =
-            `Size: ${win.width} × ${win.height}`;
-        document.getElementById("currentSize").textContent = contentText;
+    chrome.windows.getCurrent({}, (window) => {
         document.getElementById("currentPosition").textContent =
-            `Position: ${win.left} × ${win.top}`;
+            ` ${window.left} × ${window.top} `;
+
+        contentText =
+            ` ${window.width} × ${window.height} `;
+        document.getElementById("currentSize").textContent = contentText;
     });
 
     // タブの表示領域サイズ
@@ -172,17 +151,33 @@ function updateWindowInfo() {
  * @returns {void}
  */
 function showDisplaySize() {
+    let displayText = "";
     chrome.system.display.getInfo((displays) => {
-        testText({ displays });
+        //testText({ displays });
         if (displays && displays.length > 0) {
-            // 現在のメインディスプレイを取得
-            const primary = displays.find(d => d.isPrimary) || displays[0];
-            const width = primary.bounds.width;
-            const height = primary.bounds.height;
-            testText({ primary, width, height });
+            const container = document.getElementById("displaySize");
+            container.innerHTML = ""; // 初期化
 
-            document.getElementById("displaySize").textContent =
-                `Display: ${width} × ${height}`;
+            displays.forEach((display) => {
+                const left = display.bounds.left;
+                const top = display.bounds.top;
+                const width = display.bounds.width;
+                const height = display.bounds.height;
+
+                const th = document.createElement("td");
+                th.textContent = display.name;
+                const tdPosition = document.createElement("td");
+                tdPosition.textContent = ` ${left} × ${top} `;
+                const tdSize = document.createElement("td");
+                tdSize.textContent = ` ${width} × ${height} `;
+
+                const tr = document.createElement("tr");
+                tr.appendChild(th);
+                tr.appendChild(tdPosition);
+                tr.appendChild(tdSize);
+                container.appendChild(tr);
+                console.log("display.getInfo: ", { tr });
+            });
         }
     });
 }
@@ -197,18 +192,19 @@ function moveWindow(position) {
         const screenHeight = screen.availHeight;
         let newLeft = window.left;
         let newTop = window.top;
+        const windowFrameThickness = -8; // Windows のタスクバー分ではなく、ウィンドウ枠の厚さを考慮
         switch (position) {
             case "left":
-                newLeft = 0;
+                newLeft = windowFrameThickness;
                 break;
             case "right":
-                newLeft = screenWidth - window.width;
+                newLeft = screenWidth - window.width - windowFrameThickness;
                 break;
             case "top":
-                newTop = 0;
+                newTop = windowFrameThickness;
                 break;
             case "bottom":
-                newTop = screenHeight - window.height;
+                newTop = screenHeight - window.height - windowFrameThickness;
                 break;
         }
 
@@ -231,11 +227,41 @@ function testText(textContent) {
  * @returns {void}
  */
 function main() {
+    showDisplaySize();
     updateWindowInfo();
     chrome.windows.onBoundsChanged.addListener(updateWindowInfo);
     renderPresets();
 
-    // ボタンイベント登録
+    // フォーム全体で Enter キーを拾う
+    document.getElementById("presetForm").addEventListener("submit", (e) => {
+        e.preventDefault(); // デフォルトの送信動作を防止
+        addPreset();
+    });
+
+    // Handle settings button click
+    document.getElementById("settings").onclick = () => {
+        document.getElementById("moveButtons").style.display = "none";
+        document.getElementById("btn").style.display = "none";
+        document.getElementById("settingsPanel").style.display = "block";
+        renderSettings();
+    };
+
+    // Handle back button click
+    document.getElementById("back").onclick = () => {
+        document.getElementById("moveButtons").style.display = "block";
+        document.getElementById("btn").style.display = "block";
+        document.getElementById("settingsPanel").style.display = "none";
+        renderPresets();
+    };
+
+    // Add ボタンのクリックでも呼び出し
+    // Handle add preset button click
+    document.getElementById("addPreset").onclick = (e) => {
+        e.preventDefault(); // フォーム送信を防止
+        addPreset();
+    };
+
+    // 移動ボタンイベント登録
     document.getElementById("moveLeft").onclick = () => moveWindow("left");
     document.getElementById("moveRight").onclick = () => moveWindow("right");
     document.getElementById("moveTop").onclick = () => moveWindow("top");

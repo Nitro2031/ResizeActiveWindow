@@ -52,46 +52,71 @@
     </head>
 
     <body>
-        <div id="testText"></div>
-        <span id="displaySize">Display: - × -</span>
-        <span id="currentPosition"> Position: - × - </span>
-        <span id="currentSize"> Window: - × - </span>
-        <div id="moveButtons">
-            <button id="moveLeft" alt="Left">←</button>
-            <button id="moveRight" alt="Right">→</button>
-            <button id="moveTop" alt="Top">↑</button>
-            <button id="moveBottom" alt="Bottom">↓</button>
-        </div>
-        <div id="presets"></div>
-        <hr />
         <div id="btn">
-            <button id="settings"> ⚙ Settings</button>
+            <table>
+                <thead id="sizeButtons">
+                    <tr>
+                        <th>Width × Height</th>
+                        <th>
+                            <button id="settings">⚙ Settings</button>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="presets"></tbody>
+            </table>
         </div>
         <div id="settingsPanel" style="display:none;">
-            <h2>
-                <span>⚙ Settings</span>
-                <button id="back"> ◀ Back</button>
-            </h2>
             <table>
                 <tbody>
                     <tr>
-                        <th>Width</th>
-                        <th>Height</th>
-                        <th></th>
+                        <th>Width × Height</th>
+                        <td>
+                            <button id="back"> ✔ Enter </button>
+                        </td>
                     </tr>
-                    <tr>
-                        <form id="presetForm">
-                            <td><input id="newWidth" type="number"></td>
-                            <td><input id="newHeight" type="number"></td>
-                            <td><button id="addPreset"> ⊕ Add</button></td>
-                        </form>
-                    </tr>
-                <tbody id="presetList"></tbody>
                 </tbody>
+                <tbody id="presetList"></tbody>
+                <tfoot>
+                    <form id="presetForm">
+                        <tr>
+                            <td style="white-space: nowrap;">
+                                <input id="newWidth" type="number">
+                                ×
+                                <input id="newHeight" type="number">
+                            </td>
+                            <td>
+                                <button id="addPreset"> ⊕ Add</button>
+                            </td>
+                        </tr>
+                    </form>
+                </tfoot>
             </table>
-            <div id="version">
-            </div>
         </div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>System</th>
+                    <th>Position</th>
+                    <th>Size</th>
+                </tr>
+            </thead>
+            <tbody id="displaySize"></tbody>
+            <tfoot>
+                <tr>
+                    <td>Window</td>
+                    <td>
+                        <span id="currentPosition"> - × - </span>
+                    </td>
+                    <td>
+                        <span id="currentSize"> - × - </span>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        <div id="testText"></div>
+        <hr />
+        <div id="version"></div>
 
         <script src="popup.js"></script>
     </body>
