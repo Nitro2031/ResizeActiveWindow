@@ -21,6 +21,7 @@ button {
 #displaySize,
 #currentPosition,
 #currentSize,
+#moveButtons,
 #version,
 #testText {
     display: block;
