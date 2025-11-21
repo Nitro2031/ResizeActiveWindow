@@ -1,22 +1,26 @@
 body {
-    margin: 10px;
+    margin: 8px;
 }
 
 button {
-    padding: 5px 10px;
-    margin: 5px;
+    padding: 4px 8px;
+    margin: 4px;
     white-space: nowrap;
 }
 
+/*
 #back {
     float: right;
 }
+*/
 
+/*
 #presets,
 #btn {
-    margin: 5px 0;
+    margin: 4px 0;
     text-align: center;
 }
+*/
 
 #displaySize,
 #currentPosition,
@@ -24,15 +28,16 @@ button {
 #moveButtons,
 #version,
 #testText {
-    display: block;
     margin-bottom: 5px;
     font-size: small;
     white-space: nowrap;
+    /*
     text-align: right;
+    */
 }
 
 input[type="number"] {
-    width: 50px;
+    width: 64px;
 }
 
 table {
@@ -53,7 +58,7 @@ td {
 }
 
 .highlight {
-    background-color: black;
+    background-color: rgb(127, 255, 191);
     color: white;
     transition: background-color 0.5s, color 0.5s;
 }
