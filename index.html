@@ -52,40 +52,29 @@
     </head>
 
     <body>
-        <div id="testText"></div>
-        <span id="displaySize">Display: - × -</span>
-        <span id="currentPosition"> Position: - × - </span>
-        <span id="currentSize"> Window: - × - </span>
-        <div id="moveButtons">
-            <button id="moveLeft" alt="Left">←</button>
-            <button id="moveRight" alt="Right">→</button>
-            <button id="moveTop" alt="Top">↑</button>
-            <button id="moveBottom" alt="Bottom">↓</button>
-        </div>
-        <div id="presets"></div>
-        <hr />
         <div id="btn">
-            <button id="settings"> ⚙ Settings</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Width × Height</th>
+                        <th>
+                            <button id="settings"> ⚙ Settings</button>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="presets"> </tbody>
+            </table>
         </div>
         <div id="settingsPanel" style="display:none;">
-            <h2>
-                <span>⚙ Settings</span>
-                <button id="back"> ◀ Back</button>
-            </h2>
             <table>
-                <tbody>
+                <thead>
                     <tr>
-                        <th>Width</th>
-                        <th>Height</th>
-                        <th></th>
+                        <th>Width × Height</th>
+                        <th>
+                            <button id="back"> ✔ Enter</button>
+                        </th>
                     </tr>
-                    <tr>
-                        <form id="presetForm">
-                            <td><input id="newWidth" type="number"></td>
-                            <td><input id="newHeight" type="number"></td>
-                            <td><button id="addPreset"> ⊕ Add</button></td>
-                        </form>
-                    </tr>
+                </thead>
                 <tbody id="presetList"></tbody>
                 <tfoot>
                     <form id="presetForm">
@@ -142,9 +131,12 @@
                 <button id="moveBottom" title="Bottom">↓</button>
                 <button id="moveBottomRight" title="BottomRight">↘</button>
             </div>
-            <div id="version" style="display: none;"></div>
         </div>
+        <div id="version" style="display: none;"></div>
 
+        <script src="presets.js"></script>
+        <script src="windowInfo.js"></script>
+        <script src="ui.js"></script>
         <script src="popup.js"></script>
     </body>
 
