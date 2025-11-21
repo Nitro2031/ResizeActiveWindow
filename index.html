@@ -52,14 +52,12 @@
     </head>
 
     <body>
-        <div id="testText"></div>
-        <span id="currentPosition"> Position: - × - </span>
-        <span id="currentSize"> Size: - × - </span>
-        <div id="presets"></div>
-        <hr />
         <div id="btn">
             <button id="settings"> ⚙ Settings</button>
         </div>
+        <div id="presets"></div>
+        <!-- ▲プリセットボタン表示 -->
+        <!-- ▼設定画面 -->
         <div id="settingsPanel" style="display:none;">
             <h2>
                 <span>⚙ Settings</span>
@@ -68,23 +66,35 @@
             <table>
                 <tbody>
                     <tr>
-                        <th>Width</th>
-                        <th>Height</th>
+                        <th>
+                            <span class="nowrap">Width × Height</span>
+                        </th>
                         <th></th>
                     </tr>
-                    <tr>
-                        <form id="presetForm">
-                            <td><input id="newWidth" type="number"></td>
-                            <td><input id="newHeight" type="number"></td>
-                            <td><button id="addPreset"> ⊕ Add</button></td>
-                        </form>
-                    </tr>
+                </tbody>
                 <tbody id="presetList"></tbody>
                 </tbody>
+                <tbody>
+                    <tr>
+                        <form id="presetForm">
+                            <td>
+                                <span class="nowrap">
+                                    <input id="newWidth" type="number"> × <input id="newHeight" type="number">
+                                </span>
+                            </td>
+                            <td>
+                                <button id="addPreset"> ⊕ Add</button>
+                            </td>
+                        </form>
+                    </tr>
+                </tbody>
             </table>
-            <div id="version">
-            </div>
         </div>
+        <div id="testText"></div>
+        <span id="currentPosition"> Position: - × - </span>
+        <span id="currentSize"> Size: - × - </span>
+        <hr />
+        <div id="version"></div>
 
         <script src="popup.js"></script>
     </body>
