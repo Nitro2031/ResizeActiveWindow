@@ -1,4 +1,5 @@
 /** Render the preset buttons
+ * プリセットボタンの表示
  * Each button resizes the current window to the preset dimensions
  * Also handles settings panel for adding/removing presets
  * Uses chrome.storage.local to persist presets
@@ -10,7 +11,9 @@ function renderPresets() {
             chrome.storage.local.set({ presets: [{ width: 800, height: 600 }] }, renderPresets);
         } else {
             const container = document.getElementById("presets");
-            container.innerHTML = "";
+            container.innerHTML = ""; // 既存の内容をクリア
+            const hr = document.createElement("hr");
+            container.appendChild(hr);
             data.presets.forEach((parameter) => {
                 const presetBtn = document.createElement("button");
                 presetBtn.textContent = `${parameter.width}x${parameter.height}`;
@@ -28,12 +31,17 @@ function renderPresets() {
                     });
                 };
                 container.appendChild(presetBtn);
+                const br = document.createElement("br");
+                container.appendChild(br);
             });
+            const hr2 = document.createElement("hr");
+            container.appendChild(hr2);
         }
     });
 }
 
 /** Render the settings panel for managing presets
+ * 設定画面のプリセット一覧を表示
  * @returns {void}
  */
 function renderSettings(highlightIndex = null) {
@@ -41,10 +49,8 @@ function renderSettings(highlightIndex = null) {
         const listRow = document.getElementById("presetList");
         listRow.innerHTML = "";
         data.presets.forEach((p, i) => {
-            const tdWidth = document.createElement("td");
-            tdWidth.textContent = p.width;
-            const tdHeight = document.createElement("td");
-            tdHeight.textContent = p.height;
+            const td = document.createElement("td");
+            td.textContent = p.width + " × " + p.height;
             const tdDelete = document.createElement("td");
             const deleteBtn = document.createElement("button");
             deleteBtn.textContent = " 🗑️ Delete";
@@ -55,8 +61,7 @@ function renderSettings(highlightIndex = null) {
             tdDelete.appendChild(deleteBtn);
 
             const tr = document.createElement("tr");
-            tr.appendChild(tdWidth);
-            tr.appendChild(tdHeight);
+            tr.appendChild(td);
             tr.appendChild(tdDelete);
             listRow.appendChild(tr);
 
@@ -72,6 +77,7 @@ function renderSettings(highlightIndex = null) {
 }
 
 /** Add a new preset from input fields
+ * 新しいプリセットを追加
  * @returns {void}
  */
 function addPreset() {
@@ -97,6 +103,7 @@ document.getElementById("presetForm").addEventListener("submit", (e) => {
 });
 
 /** Handle settings button click
+ * 設定ボタンのクリックで呼び出し
  * @returns {void}
  */
 document.getElementById("settings").onclick = () => {
@@ -107,6 +114,7 @@ document.getElementById("settings").onclick = () => {
 };
 
 /** Handle back button click
+ * 設定画面から戻るボタンの処理
  * @returns {void}
  */
 document.getElementById("back").onclick = () => {
@@ -126,6 +134,7 @@ document.getElementById("addPreset").onclick = (e) => {
 };
 
 /** Update and display current window size and position
+ * ウィンドウのサイズと位置を取得して表示
  * @returns {void}
  */
 function updateWindowInfo() {
@@ -171,7 +180,7 @@ function updateWindowInfo() {
  * @returns {void}
  */
 function testText(textContent) {
-    //document.getElementById("testText").textContent = textContent;
+    document.getElementById("testText").textContent = textContent;
 }
 
 /** Main function to initialize the popup
@@ -183,7 +192,7 @@ function main() {
     renderPresets();
     // バージョン情報の表示
     const manifest = chrome.runtime.getManifest();
-    document.getElementById("version").textContent = `${manifest.name} Version: ${manifest.version}`;
+    document.getElementById("version").innerHTML = `${manifest.action.default_title}<br /> Version: ${manifest.version}`;
 }
 
 main();
