@@ -151,9 +151,13 @@ function updateWindowInfo() {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs[0]) {
             const url = tabs[0].url || "";
-            testText(url);
+            //testText(url);
 
-            if (url.startsWith("chrome://") || url.startsWith("about:")) {
+            if (url.startsWith("chrome://")
+                || url.startsWith("about:")
+                || url.startsWith("chrome-extension://")
+                || url.startsWith("edge://")
+            ) {
                 // 内部ページはスクリプト注入不可 → 表示領域サイズは取得しない
                 contentText += " | Content: (not accessible)";
             } else {
