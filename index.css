@@ -8,22 +8,34 @@ button {
     white-space: nowrap;
 }
 
+/*
 #back {
+    float: right;
+}
+*/
+
+/*
+#presets,
+#btn {
+    margin: 4px 0;
     text-align: center;
 }
+*/
 
 #displaySize,
 #currentPosition,
 #currentSize,
+#moveButtons,
 #version,
 #testText {
+    margin-bottom: 5px;
     font-size: small;
     white-space: nowrap;
     text-align: center;
 }
 
 input[type="number"] {
-    width: 56px;
+    width: 64px;
 }
 
 table {
@@ -49,7 +61,7 @@ td {
 }
 
 .highlight {
-    background-color: black;
+    background-color: rgb(127, 255, 191);
     color: white;
     transition: background-color 0.5s, color 0.5s;
 }

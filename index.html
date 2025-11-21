@@ -54,11 +54,21 @@
     <body>
         <div id="btn">
             <table>
-                <thead id="sizeButtons">
+                <thead>
                     <tr>
                         <th>Width × Height</th>
                         <th>
-                            <button id="settings">⚙ Settings</button>
+                            <table>
+                                <thead id="sizeButtons">
+                                    <tr>
+                                        <th>Width × Height</th>
+                                        <th>
+                                            <button id="settings">⚙ Settings</button>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="presets"> </tbody>
+                            </table>
                         </th>
                     </tr>
                 </thead>
@@ -67,22 +77,22 @@
         </div>
         <div id="settingsPanel" style="display:none;">
             <table>
-                <tbody>
+                <thead>
                     <tr>
                         <th>Width × Height</th>
                         <td>
                             <button id="back"> ✔ Enter </button>
                         </td>
                     </tr>
-                </tbody>
+                </thead>
                 <tbody id="presetList"></tbody>
                 <tfoot>
                     <form id="presetForm">
                         <tr>
                             <td style="white-space: nowrap;">
-                                <input id="newWidth" type="number">
+                                <input id="newWidth" type="number" size="5" placeholder="Width">
                                 ×
-                                <input id="newHeight" type="number">
+                                <input id="newHeight" type="number" size="5" placeholder="Height">
                             </td>
                             <td>
                                 <button id="addPreset"> ⊕ Add</button>
@@ -92,7 +102,7 @@
                 </tfoot>
             </table>
         </div>
-        </div>
+        <hr />
         <table>
             <thead>
                 <tr>
@@ -115,9 +125,28 @@
             </tfoot>
         </table>
         <div id="testText"></div>
-        <hr />
-        <div id="version"></div>
+        <div id="moveButtons" style="display: block;">
+            <div id="top">
+                <button id="moveTopLeft" title="TopLeft">↖</button>
+                <button id="moveTop" title="Top">↑</button>
+                <button id="moveTopRight" title="TopRight">↗</button>
+            </div>
+            <div id="middle">
+                <button id="moveLeft" title="Left">←</button>
+                <button id="moveCenter" title="Center">◎</button>
+                <button id="moveRight" title="Right">→</button>
+            </div>
+            <div id="bottom">
+                <button id="moveBottomLeft" title="BottomLeft">↙</button>
+                <button id="moveBottom" title="Bottom">↓</button>
+                <button id="moveBottomRight" title="BottomRight">↘</button>
+            </div>
+        </div>
+        <div id="version" style="display: none;"></div>
 
+        <script src="presets.js"></script>
+        <script src="windowInfo.js"></script>
+        <script src="ui.js"></script>
         <script src="popup.js"></script>
     </body>
 
