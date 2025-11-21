@@ -64,14 +64,14 @@
                 <button id="back"> ◀ Back</button>
             </h2>
             <table>
-                <tbody>
+                <!--thead>
                     <tr>
                         <th>
                             <span class="nowrap">Width × Height</span>
                         </th>
                         <th></th>
                     </tr>
-                </tbody>
+                </thead-->
                 <tbody id="presetList"></tbody>
                 </tbody>
                 <tbody>
@@ -79,7 +79,9 @@
                         <form id="presetForm">
                             <td>
                                 <span class="nowrap">
-                                    <input id="newWidth" type="number"> × <input id="newHeight" type="number">
+                                    <input id="newWidth" type="number" placeholder="Width">
+                                    ×
+                                    <input id="newHeight" type="number" placeholder="Height">
                                 </span>
                             </td>
                             <td>
