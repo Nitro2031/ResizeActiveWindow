@@ -194,9 +194,12 @@ function main() {
     updateWindowInfo();
     chrome.windows.onBoundsChanged.addListener(updateWindowInfo);
     renderPresets();
+
     // バージョン情報の表示
     const manifest = chrome.runtime.getManifest();
-    document.getElementById("version").innerHTML = `${manifest.action.default_title}<br /> Version: ${manifest.version}`;
+    const title = manifest.action.default_title || manifest.name;
+    const version = manifest.version;
+    document.getElementById("version").innerHTML = `${title}<br /> Version: ${version}`;
 }
 
 main();
