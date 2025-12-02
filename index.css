@@ -9,11 +9,27 @@ button {
 }
 
 #back {
-    float: center;
+    float: right;
 }
 
 #reset {
-    float: right;
+    float: left;
+    /* 赤で強調 */
+    background-color: #FF4C4C;
+    /* 文字色は白でコントラスト確保 */
+    color: white;
+    font-weight: bold;
+    border-radius: 2px;
+    padding: 2px 4px;
+}
+
+.settingsPanel {
+    display: none;
+}
+
+#reset:hover {
+    /* ホバー時にさらに濃い赤 */
+    background-color: #CC0000;
 }
 
 #presets,

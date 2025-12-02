@@ -59,11 +59,10 @@
         <div id="presets"></div>
         <!-- ▲プリセットボタン表示 -->
         <!-- ▼設定画面 -->
-        <div id="settingsPanel" style="display:none;">
+        <div class="settingsPanel">
             <h2>
                 <span>⚙ Settings</span>
-                <button id="back"> ◀ Back</button>
-                <button id="reset"> Reset</button>
+                <button id="back"> ↩️ Back</button>
             </h2>
             <table>
                 <!--thead>
@@ -102,6 +101,7 @@
             <span id="currentSize"> - × - </span>
         </div>
         <hr />
+        <button id="reset" class="settingsPanel"> 🔄 Reset</button>
         <div id="version"></div>
 
         <script src="popup.js"></script>
