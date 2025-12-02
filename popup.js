@@ -1,4 +1,19 @@
 const windowThickness = 8; // ウィンドウ枠の厚さを考慮
+const presets = {
+    presets: [{
+        width: 816,
+        height: 568
+    }, {
+        width: 1040,
+        height: 756
+    }, {
+        width: 1296,
+        height: 768
+    }, {
+        width: 1936,
+        height: 1048
+    }]
+};
 
 /** Render the preset buttons
  * プリセットボタンの表示と動作設定
@@ -10,21 +25,7 @@ const windowThickness = 8; // ウィンドウ枠の厚さを考慮
 function renderPresets() {
     chrome.storage.local.get({ presets: [] }, (data) => {
         if (data.presets.length === 0) {
-            chrome.storage.local.set({
-                presets: [{
-                    width: 816,
-                    height: 560
-                }, {
-                    width: 1040,
-                    height: 748
-                }, {
-                    width: 1296,
-                    height: 760
-                }, {
-                    width: 1936,
-                    height: 1040
-                }]
-            }, renderPresets);
+            chrome.storage.local.set(presets, renderPresets);
         } else {
             const container = document.getElementById("presets");
             container.innerHTML = ""; // 既存の内容をクリア
@@ -43,10 +44,10 @@ function renderPresets() {
                             const targetDisplay = displays.find(d => {
                                 const bounds = d.bounds;
                                 //testText(JSON.stringify(bounds));
-                                return rightX >= bounds.left &&
-                                    rightX <= bounds.left + bounds.width &&
-                                    topY >= bounds.top &&
-                                    topY <= bounds.top + bounds.height;
+                                return rightX >= bounds.left + windowThickness + 1 &&
+                                    rightX <= bounds.left + bounds.width + windowThickness + 1 &&
+                                    topY >= bounds.top - windowThickness - 1 &&
+                                    topY <= bounds.top + bounds.height - windowThickness - 1;
                             }) || displays[0]; // 見つからなければプライマリ
                             // 画面の利用可能領域(除くタスクバー)を取得
                             const screenWidth = targetDisplay.workArea.width;
@@ -59,11 +60,11 @@ function renderPresets() {
                             let targetWidth = parameter.width;
                             let targetHeight = parameter.height;
                             if (targetWidth > screenWidth + windowThickness * 2) targetWidth = screenWidth + windowThickness * 2;
-                            if (targetHeight > screenHeight + windowThickness) targetHeight = screenHeight + windowThickness;
+                            if (targetHeight > screenHeight + windowThickness * 2) targetHeight = screenHeight + windowThickness * 2;
 
                             // 位置補正（拡張機能ボタンがある右上基準）
                             let newLeft = window.left + window.width - targetWidth;
-                            let newTop = window.top;
+                            let newTop = window.top - windowThickness;
 
                             // 画面左にはみ出さないように調整
                             if (newLeft < screenLeft - windowThickness) {
@@ -71,14 +72,14 @@ function renderPresets() {
                             }
                             // 画面上にはみ出さないように調整
                             if (newTop < screenTop - windowThickness) {
-                                newTop = screenTop;
+                                newTop = screenTop - windowThickness;
                             }
                             // 画面右にはみ出さないように調整
                             if (newLeft + targetWidth > screenLeft + screenWidth + windowThickness) {
                                 newLeft = screenLeft + screenWidth - targetWidth + windowThickness;
                             }
                             // 画面下にはみ出さないように調整
-                            if (newTop + targetHeight > screenTop + screenHeight + windowThickness * 2) {
+                            if (newTop + targetHeight > screenTop + screenHeight + windowThickness) {
                                 newTop = screenTop + screenHeight - targetHeight + windowThickness;
                             }
 
@@ -173,7 +174,9 @@ document.getElementById("presetForm").addEventListener("submit", (e) => {
 document.getElementById("settings").onclick = () => {
     document.getElementById("presets").style.display = "none";
     document.getElementById("btn").style.display = "none";
-    document.getElementById("settingsPanel").style.display = "block";
+    Array.from(
+        document.getElementsByClassName("settingsPanel")
+    ).forEach(el => el.style.display = "block");
     renderSettings();
 };
 
@@ -184,8 +187,29 @@ document.getElementById("settings").onclick = () => {
 document.getElementById("back").onclick = () => {
     document.getElementById("presets").style.display = "block";
     document.getElementById("btn").style.display = "block";
-    document.getElementById("settingsPanel").style.display = "none";
+    Array.from(
+        document.getElementsByClassName("settingsPanel")
+    ).forEach(el => el.style.display = "none");
     renderPresets();
+};
+
+/** Promisified version of chrome.storage.local.set
+ * chrome.storage.local.set の Promise 版
+ * @param {Object} data - data to store
+ * @returns {Promise<void>} Promise that resolves when set is complete
+ */
+function setStorageAsync(data) {
+    return new Promise(resolve => {
+        chrome.storage.local.set(data, resolve);
+    });
+}
+
+// Reset ボタンのクリック処理
+document.getElementById("reset").onclick = async () => {
+    // ストレージを初期化
+    await setStorageAsync(presets);
+    // 設定画面を再描画
+    renderSettings();
 };
 
 /** Handle add preset button click
