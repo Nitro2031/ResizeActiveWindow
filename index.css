@@ -18,11 +18,20 @@ button {
     text-align: center;
 }
 
-.nowrap,
-#testText {
+.nowrap {
     margin-bottom: 4px;
     font-size: small;
     white-space: nowrap;
+}
+
+#testText {
+    white-space: pre-wrap;
+}
+
+.displayInfo {
+    font-size: small;
+    white-space: nowrap;
+    text-align: right;
 }
 
 #currentPosition,

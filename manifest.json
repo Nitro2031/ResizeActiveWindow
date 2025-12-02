@@ -6,7 +6,8 @@
         "windows",
         "storage",
         "activeTab",
-        "scripting"
+        "scripting",
+        "system.display"
     ],
     "action": {
         "default_popup": "index.html",

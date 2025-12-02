@@ -1,5 +1,7 @@
+const windowFrameThickness = -8; // ウィンドウ枠の厚さを考慮
+
 /** Render the preset buttons
- * プリセットボタンの表示
+ * プリセットボタンの表示と動作設定
  * Each button resizes the current window to the preset dimensions
  * Also handles settings panel for adding/removing presets
  * Uses chrome.storage.local to persist presets
@@ -12,36 +14,75 @@ function renderPresets() {
         } else {
             const container = document.getElementById("presets");
             container.innerHTML = ""; // 既存の内容をクリア
-            const hr = document.createElement("hr");
-            container.appendChild(hr);
+            container.appendChild(document.createElement("hr"));
             data.presets.forEach((parameter) => {
                 const presetBtn = document.createElement("button");
                 presetBtn.textContent = `${parameter.width}x${parameter.height}`;
                 presetBtn.className = "preset";
                 presetBtn.onclick = () => {
                     chrome.windows.getCurrent({}, (window) => {
-                        const newLeft = window.left + window.width - parameter.width;
+                        // 画面の利用可能領域
+                        let screenWidth = window.width;
+                        let screenHeight = window.height;
+
+                        // 拡張機能が表示される右上を基準に表示画面の利用可能領域を取得
+                        const rightX = window.left + screenWidth;
+                        const topY = window.top;
+                        chrome.system.display.getInfo((displays) => {
+                            // 右上座標が属するディスプレイを探す
+                            const display = displays.find(d => {
+                                const b = d.bounds;
+                                testText(JSON.stringify(b));
+                                return rightX >= b.left &&
+                                    rightX <= b.left + b.width &&
+                                    topY >= b.top &&
+                                    topY <= b.top + b.height;
+                            }) || displays[0]; // 見つからなければプライマリ
+
+                            // 画面の利用可能領域を取得
+                            screenWidth = display.workArea.width;
+                            screenHeight = display.workArea.height;
+                        });
+
+                        // 上限補正
+                        let targetWidth = parameter.width;
+                        let targetHeight = parameter.height;
+                        if (targetWidth > screenWidth) targetWidth = screenWidth;
+                        if (targetHeight > screenHeight) targetHeight = screenHeight;
+
+                        // 位置補正（右上固定）
+                        let newLeft = window.left + window.width - targetWidth;
+                        let newTop = window.top;
+
+                        // 画面外にはみ出さないように調整
+                        if (newLeft < 0 + windowFrameThickness) newLeft = 0 + windowFrameThickness;
+                        if (newTop < 0 + windowFrameThickness) newTop = 0 + windowFrameThickness;
+                        if (newLeft + targetWidth > screenWidth - windowFrameThickness) newLeft = screenWidth - targetWidth - windowFrameThickness;
+                        if (newTop + targetHeight > screenHeight - windowFrameThickness) newTop = screenHeight - targetHeight - windowFrameThickness;
+
+                        // ウィンドウサイズと位置を変更
                         chrome.windows.update(
                             window.id,
                             {
-                                width: parameter.width,
-                                height: parameter.height,
-                                left: newLeft
-                            });
+                                width: targetWidth,
+                                height: targetHeight,
+                                left: newLeft,
+                                top: newTop
+                            }
+                        );
                     });
                 };
                 container.appendChild(presetBtn);
                 const br = document.createElement("br");
                 container.appendChild(br);
             });
-            const hr2 = document.createElement("hr");
-            container.appendChild(hr2);
+            container.appendChild(document.createElement("hr"));
         }
     });
 }
 
 /** Render the settings panel for managing presets
- * 設定画面のプリセット一覧を表示
+ * 設定画面のプリセットボタン一覧を表示
  * @returns {void}
  */
 function renderSettings(highlightIndex = null) {
@@ -77,7 +118,7 @@ function renderSettings(highlightIndex = null) {
 }
 
 /** Add a new preset from input fields
- * 新しいプリセットを追加
+ * 新しいプリセットボタンを追加
  * @returns {void}
  */
 function addPreset() {
@@ -94,7 +135,7 @@ function addPreset() {
     });
 }
 
-/** フォーム全体で Enter キーを拾う
+/** フォーム全体で Enter キーを拾い、プリセットボタン保存を呼び出す
  * @returns {void}
  */
 document.getElementById("presetForm").addEventListener("submit", (e) => {
@@ -103,7 +144,7 @@ document.getElementById("presetForm").addEventListener("submit", (e) => {
 });
 
 /** Handle settings button click
- * 設定ボタンのクリックで呼び出し
+ * 設定ボタンのクリックで設定画面呼び出し
  * @returns {void}
  */
 document.getElementById("settings").onclick = () => {
@@ -114,7 +155,7 @@ document.getElementById("settings").onclick = () => {
 };
 
 /** Handle back button click
- * 設定画面から戻るボタンの処理
+ * 設定画面で戻るボタンからメニュー画面へ切り替え
  * @returns {void}
  */
 document.getElementById("back").onclick = () => {
@@ -125,7 +166,7 @@ document.getElementById("back").onclick = () => {
 };
 
 /** Handle add preset button click
- * Add ボタンのクリックでも呼び出し
+ * Add ボタンのクリックでもプリセットボタン保存を呼び出す
  * @returns {void}
  */
 document.getElementById("addPreset").onclick = (e) => {
@@ -141,10 +182,10 @@ function updateWindowInfo() {
     let contentText = `- × -`;
     chrome.windows.getCurrent({}, (win) => {
         contentText =
-            `Size: ${win.width} × ${win.height}`;
+            ` ${win.width} × ${win.height}`;
         document.getElementById("currentSize").textContent = contentText;
         document.getElementById("currentPosition").textContent =
-            `Position: ${win.left} × ${win.top}`;
+            `Window: ( ${win.left} , ${win.top} ) `;
     });
 
     // タブの表示領域サイズ
@@ -180,6 +221,7 @@ function updateWindowInfo() {
 }
 
 /** Test function to display text in the popup
+ * テスト用関数：ポップアップ内にテキスト表示
  * @param {string} textContent - text to display
  * @returns {void}
  */
@@ -187,13 +229,39 @@ function testText(textContent) {
     document.getElementById("testText").textContent = textContent;
 }
 
+/** Format display information as a string
+ * ディスプレイ情報を文字列化
+ * @param {Object} display - display object from chrome.system.display.getInfo
+ * @returns {string} formatted display information
+ */
+function displayInfo(display) {
+    const name = display.name || `Display${display.id}`;
+    const bounds = display.bounds;
+    const position = `(${bounds.left}, ${bounds.top})`;
+    const size = `${bounds.width} x ${bounds.height}`;
+    return `<div class="displayInfo">${name} : ${position} ${size}</div>`;
+}
+
 /** Main function to initialize the popup
+ * ポップアップの初期化処理
  * @returns {void}
  */
 function main() {
     updateWindowInfo();
     chrome.windows.onBoundsChanged.addListener(updateWindowInfo);
     renderPresets();
+
+    // ディスプレイ情報の表示
+    chrome.system.display.getInfo((displays) => {
+        const displayInfoDiv = document.getElementById("displays");
+        displayInfoDiv.innerHTML = "";
+        let displayInfoText = "";
+        displays.forEach(display => {
+            //testText(JSON.stringify(display));
+            displayInfoText += displayInfo(display);
+        });
+        displayInfoDiv.innerHTML = displayInfoText;
+    });
 
     // バージョン情報の表示
     const manifest = chrome.runtime.getManifest();
