@@ -76,8 +76,11 @@ function windowResize(parameter) {
             preset.left = newLeft;
             preset.top = newTop;
         });
-        testText({ preset });
+        const id = window.id;
+        preset.state = "normal"; // 最大化・最小化解除
+        testText(id + " :( " + preset.left + ", " + preset.top + " ) " + preset.width + " × " + preset.height);
         console.log({ preset });
+        console.log({ id })
 
         chrome.windows.update(
             window.id,
