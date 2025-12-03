@@ -17,76 +17,98 @@ const defaultPresets = {
     }]
 };
 
+/** Helper function to get current window as a Promise
+ * 呼び出されたウィンドウ情報をPromiseで取得
+ * @return {Promise<chrome.windows.Window>}
+ */
+function getCurrentWindow() {
+    return new Promise(resolve => {
+        chrome.windows.getCurrent({}, resolve);
+    });
+}
+
+/** Helper function to get display info as a Promise
+ * 全てのディスプレイ情報をPromiseで取得
+ * @return {Promise<chrome.system.display.DisplayInfo[]>}
+ */
+function getDisplays() {
+    return new Promise(resolve => {
+        chrome.system.display.getInfo(resolve);
+    });
+}
+
 /** Resize the current window to specified width and height
  * アクティブなウィンドウを指定サイズにリサイズする
  * @param {{width: number, height: number}} parameter - New dimensions of the window
  * @returns {void}
  */
-function windowResize(parameter) {
-    chrome.windows.getCurrent({}, (window) => {
-        // 拡張機能が表示される右上を基準に表示画面の利用可能領域を取得
-        const rightX = window.left + window.width;
-        const topY = window.top;
-        const preset = {};
-        chrome.system.display.getInfo((displays) => {
-            // 右上座標が属するディスプレイを探す
-            const targetDisplay = displays.find(d => {
-                const bounds = d.bounds;
-                //testText(JSON.stringify(bounds));
-                return rightX >= bounds.left + windowThickness + 1 &&
-                    rightX <= bounds.left + bounds.width + windowThickness + 1 &&
-                    topY >= bounds.top - windowThickness - 1 &&
-                    topY <= bounds.top + bounds.height - windowThickness - 1;
-            }) || displays[0]; // 見つからなければプライマリ
-            // 画面の利用可能領域(除くタスクバー)を取得
-            const screenWidth = targetDisplay.workArea.width;
-            const screenHeight = targetDisplay.workArea.height;
-            const screenLeft = targetDisplay.workArea.left;
-            const screenTop = targetDisplay.workArea.top;
-            //testText(JSON.stringify(targetDisplay.workArea));
+async function windowResize(parameter) {
+    const window = await getCurrentWindow();
 
-            // サイズ上限補正
-            let targetWidth = parameter.width;
-            let targetHeight = parameter.height;
-            if (targetWidth > screenWidth + windowThickness * 2) targetWidth = screenWidth + windowThickness * 2;
-            if (targetHeight > screenHeight + windowThickness * 2) targetHeight = screenHeight + windowThickness * 2;
+    // 拡張機能が表示される右上を基準に表示画面の利用可能領域を取得
+    const rightX = window.left + window.width;
+    const topY = window.top;
+    const preset = {};
 
-            // 位置補正（拡張機能ボタンがある右上基準）
-            let newLeft = window.left + window.width - targetWidth;
-            let newTop = window.top - windowThickness;
+    const displays = await getDisplays();
 
-            // 画面左にはみ出さないように調整
-            if (newLeft < screenLeft - windowThickness) {
-                newLeft = screenLeft - windowThickness;
-            }
-            // 画面上にはみ出さないように調整
-            if (newTop < screenTop - windowThickness) {
-                newTop = screenTop - windowThickness;
-            }
-            // 画面右にはみ出さないように調整
-            if (newLeft + targetWidth > screenLeft + screenWidth + windowThickness) {
-                newLeft = screenLeft + screenWidth - targetWidth + windowThickness;
-            }
-            // 画面下にはみ出さないように調整
-            if (newTop + targetHeight > screenTop + screenHeight + windowThickness) {
-                newTop = screenTop + screenHeight - targetHeight + windowThickness;
-            }
-            preset.width = targetWidth;
-            preset.height = targetHeight;
-            preset.left = newLeft;
-            preset.top = newTop;
-        });
-        const id = window.id;
-        preset.state = "normal"; // 最大化・最小化解除
-        testText(id + " :( " + preset.left + ", " + preset.top + " ) " + preset.width + " × " + preset.height);
-        console.log({ preset });
-        console.log({ id })
+    // 右上座標が属するディスプレイを探す
+    const targetDisplay = displays.find(d => {
+        const bounds = d.bounds;
+        //testText(JSON.stringify(bounds));
+        return rightX >= bounds.left + windowThickness + 1 &&
+            rightX <= bounds.left + bounds.width + windowThickness + 1 &&
+            topY >= bounds.top - windowThickness - 1 &&
+            topY <= bounds.top + bounds.height - windowThickness - 1;
+    }) || displays[0]; // 見つからなければプライマリ
+    // 画面の利用可能領域(除くタスクバー)を取得
+    const screenWidth = targetDisplay.workArea.width;
+    const screenHeight = targetDisplay.workArea.height;
+    const screenLeft = targetDisplay.workArea.left;
+    const screenTop = targetDisplay.workArea.top;
+    //testText(JSON.stringify(targetDisplay.workArea));
 
-        chrome.windows.update(
-            window.id,
-            preset
-        );
-    });
+    // サイズ上限補正
+    let targetWidth = parameter.width;
+    let targetHeight = parameter.height;
+    if (targetWidth > screenWidth + windowThickness * 2) targetWidth = screenWidth + windowThickness * 2;
+    if (targetHeight > screenHeight + windowThickness * 2) targetHeight = screenHeight + windowThickness * 2;
+
+    // 位置補正（拡張機能ボタンがある右上基準）
+    let newLeft = window.left + window.width - targetWidth;
+    let newTop = window.top - windowThickness;
+
+    // 画面左にはみ出さないように調整
+    if (newLeft < screenLeft - windowThickness) {
+        newLeft = screenLeft - windowThickness;
+    }
+    // 画面上にはみ出さないように調整
+    if (newTop < screenTop - windowThickness) {
+        newTop = screenTop - windowThickness;
+    }
+    // 画面右にはみ出さないように調整
+    if (newLeft + targetWidth > screenLeft + screenWidth + windowThickness) {
+        newLeft = screenLeft + screenWidth - targetWidth + windowThickness;
+    }
+    // 画面下にはみ出さないように調整
+    if (newTop + targetHeight > screenTop + screenHeight + windowThickness) {
+        newTop = screenTop + screenHeight - targetHeight + windowThickness;
+    }
+    preset.width = targetWidth;
+    preset.height = targetHeight;
+    preset.left = newLeft;
+    preset.top = newTop;
+
+    const id = window.id;
+    preset.state = "normal"; // 最大化・最小化解除
+    testText(id + " :( " + preset.left + ", " + preset.top + " ) " + preset.width + " × " + preset.height);
+    console.log({ preset });
+    console.log({ id })
+
+    await chrome.windows.update(
+        window.id,
+        preset
+    );
 }
 
 /** Create a preset button and append it to the container
