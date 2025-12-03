@@ -11,6 +11,7 @@ function main() {
         const settingsBtn = document.getElementById("settings");
         const backBtn = document.getElementById("back");
         const addPresetBtn = document.getElementById("addPreset");
+        const resetBtn = document.getElementById("resetButton");
         const presetForm = document.getElementById("presetForm");
         const moveLeft = document.getElementById("moveLeft");
         const moveRight = document.getElementById("moveRight");
@@ -52,6 +53,13 @@ function main() {
             // Handle add preset button click
             addPresetBtn.onclick = (e) => {
                 handleAddPresetButton(e);
+            };
+        }
+
+        if (resetBtn) {
+            resetBtn.onclick = () => {
+                // Handle reset button click
+                resetPresets();
             };
         }
 
