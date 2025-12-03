@@ -55,7 +55,19 @@ function handleAddPresetButton(e) {
     addPreset();
 }
 
+/** Reset presets to default values
+ * プリセットをデフォルト値にリセット
+ * @returns {void}
+ */
+function resetPresets() {
+    chrome.storage.local.set(defaultPresets, () => {
+        renderPresets();
+        handleReturnButton()();
+    });
+}
+
 /** Test function to display text in the popup
+ * テスト用: ポップアップにテキストを表示
  * @param {string} textContent - text to display
  * @returns {void}
  */
