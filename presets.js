@@ -17,6 +17,59 @@ const defaultPresets = {
     }]
 };
 
+function positionAdjustment(parameter) {
+    chrome.windows.getCurrent({}, (window) => {
+        // 拡張機能が表示される右上を基準に表示画面の利用可能領域を取得
+        const rightX = window.left + window.width;
+        const topY = window.top;
+        chrome.system.display.getInfo((displays) => {
+            // 右上座標が属するディスプレイを探す
+            const targetDisplay = displays.find(d => {
+                const bounds = d.bounds;
+                //testText(JSON.stringify(bounds));
+                return rightX >= bounds.left + windowThickness + 1 &&
+                    rightX <= bounds.left + bounds.width + windowThickness + 1 &&
+                    topY >= bounds.top - windowThickness - 1 &&
+                    topY <= bounds.top + bounds.height - windowThickness - 1;
+            }) || displays[0]; // 見つからなければプライマリ
+            // 画面の利用可能領域(除くタスクバー)を取得
+            const screenWidth = targetDisplay.workArea.width;
+            const screenHeight = targetDisplay.workArea.height;
+            const screenLeft = targetDisplay.workArea.left;
+            const screenTop = targetDisplay.workArea.top;
+            //testText(JSON.stringify(targetDisplay.workArea));
+
+            // サイズ上限補正
+            let targetWidth = parameter.width;
+            let targetHeight = parameter.height;
+            if (targetWidth > screenWidth + windowThickness * 2) targetWidth = screenWidth + windowThickness * 2;
+            if (targetHeight > screenHeight + windowThickness * 2) targetHeight = screenHeight + windowThickness * 2;
+
+            // 位置補正（拡張機能ボタンがある右上基準）
+            let newLeft = window.left + window.width - targetWidth;
+            let newTop = window.top - windowThickness;
+
+            // 画面左にはみ出さないように調整
+            if (newLeft < screenLeft - windowThickness) {
+                newLeft = screenLeft - windowThickness;
+            }
+            // 画面上にはみ出さないように調整
+            if (newTop < screenTop - windowThickness) {
+                newTop = screenTop - windowThickness;
+            }
+            // 画面右にはみ出さないように調整
+            if (newLeft + targetWidth > screenLeft + screenWidth + windowThickness) {
+                newLeft = screenLeft + screenWidth - targetWidth + windowThickness;
+            }
+            // 画面下にはみ出さないように調整
+            if (newTop + targetHeight > screenTop + screenHeight + windowThickness) {
+                newTop = screenTop + screenHeight - targetHeight + windowThickness;
+            }
+            return { targetWidth, targetHeight, newLeft, newTop };
+        });
+    });
+}
+
 /** Resize the current window to specified width and height
  * @param {number} width - New width of the window
  * @param {number} height - New height of the window
