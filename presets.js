@@ -65,52 +65,35 @@ function positionAdjustment(parameter) {
             if (newTop + targetHeight > screenTop + screenHeight + windowThickness) {
                 newTop = screenTop + screenHeight - targetHeight + windowThickness;
             }
-            return { targetWidth, targetHeight, newLeft, newTop };
+            return {
+                width: targetWidth,
+                height: targetHeight,
+                left: newLeft,
+                top: newTop
+            };
         });
     });
 }
 
 /** Resize the current window to specified width and height
- * @param {number} width - New width of the window
- * @param {number} height - New height of the window
+ * アクティブなウィンドウを指定サイズにリサイズする
+ * @param {{width: number, height: number}} parameter - New dimensions of the window
  * @returns {void}
  */
-function windowResize(width, height) {
-    chrome.windows.getCurrent({}, (window) => {
-        const newLeft = window.left + window.width - width;
-        chrome.windows.update(
-            window.id,
-            {
-                width: width,
-                height: height,
-                left: newLeft
-            });
-    });
+function windowResize(parameter) {
+    const preset = positionAdjustment(parameter);
+
+    chrome.windows.update(
+        window.id,
+        {
+            width: preset.width,
+            height: preset.height,
+            left: preset.left,
+            top: preset.top
+        }
+    );
 }
 
-/** Create a preset button and append it to the container
- * @param {{width: number, height: number}} parameter - Preset dimensions
- * @param {HTMLElement} container - Container to append the button to
- * @returns {void}
- */
-function createPreset(parameter, index) {
-    const preset = document.createElement("button");
-    preset.textContent = `${parameter.width} × ${parameter.height}`;
-    preset.className = "preset";
-    preset.onclick = () => {
-        windowResize(parameter.width, parameter.height);
-    };
-    const td = document.createElement("td");
-    td.appendChild(preset);
-    const deleteElement = document.createElement("span");
-    deleteElement.textContent = " 🗑️ Delete";
-    const tdDelete = document.createElement("td");
-    tdDelete.appendChild(deleteElement);
-    const tr = document.createElement("tr");
-    tr.appendChild(td);
-    tr.appendChild(tdDelete);
-    return tr;
-}
 /** Create a preset button and append it to the container
  * @param {{width: number, height: number}} parameter - Preset dimensions
  * @param {HTMLElement} container - Container to append the button to
