@@ -1,10 +1,19 @@
 // presets.js
 
 // Data structure to hold preset dimensions
-const data = {
+const defaultPresets = {
     presets: [{
-        width: 800,
-        height: 600
+        width: 816,
+        height: 568
+    }, {
+        width: 1040,
+        height: 756
+    }, {
+        width: 1296,
+        height: 768
+    }, {
+        width: 1936,
+        height: 1048
     }]
 };
 
