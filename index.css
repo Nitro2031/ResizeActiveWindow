@@ -65,3 +65,32 @@ td {
     color: white;
     transition: background-color 0.5s, color 0.5s;
 }
+
+.settingsPanel {
+    display: none;
+}
+
+#resetButton {
+    text-align: center;
+    margin-top: 8px;
+    background-color: #FF4C4C;
+    color: white;
+    padding: 2px 4px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+#resetButton:hover {
+    background-color: darkred;
+}
+
+#resetButton:active {
+    background-color: maroon;
+}
+
+.displayInfo {
+    font-size: small;
+    white-space: nowrap;
+    text-align: right;
+}

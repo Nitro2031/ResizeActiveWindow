@@ -5,9 +5,13 @@
 function handleSettingsButton() {
     document.getElementById("settings").onclick = () => {
         document.getElementById("moveButtons").style.display = "none";
-        document.getElementById("version").style.display = "block";
+        //document.getElementById("version").style.display = "block";
         document.getElementById("btn").style.display = "none";
-        document.getElementById("settingsPanel").style.display = "block";
+        Array.from(
+            document.getElementsByClassName("settingsPanel")
+        ).forEach(element => {
+            element.style.display = "block";
+        });
         Array.from(
             document.getElementsByClassName("deletePreset")
         ).forEach(element => {
@@ -24,9 +28,13 @@ function handleSettingsButton() {
 function handleReturnButton() {
     document.getElementById("back").onclick = () => {
         document.getElementById("moveButtons").style.display = "block";
-        document.getElementById("version").style.display = "none";
+        //document.getElementById("version").style.display = "none";
         document.getElementById("btn").style.display = "block";
-        document.getElementById("settingsPanel").style.display = "none";
+        Array.from(
+            document.getElementsByClassName("settingsPanel")
+        ).forEach(element => {
+            element.style.display = "none";
+        });
         Array.from(
             document.getElementsByClassName("deletePreset")
         ).forEach(element => {
@@ -45,4 +53,12 @@ function handleReturnButton() {
 function handleAddPresetButton(e) {
     e.preventDefault(); // フォーム送信を防止
     addPreset();
+}
+
+/** Test function to display text in the popup
+ * @param {string} textContent - text to display
+ * @returns {void}
+ */
+function testText(textContent) {
+    document.getElementById("testText").textContent = textContent;
 }

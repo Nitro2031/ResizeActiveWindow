@@ -75,7 +75,7 @@
                 <tbody id="presets"></tbody>
             </table>
         </div>
-        <div id="settingsPanel" style="display:none;">
+        <div class="settingsPanel">
             <table>
                 <thead>
                     <tr>
@@ -106,7 +106,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>System</th>
+                    <th>Device</th>
                     <th>Position</th>
                     <th>Size</th>
                 </tr>
@@ -116,7 +116,7 @@
                 <tr>
                     <td>Window</td>
                     <td>
-                        <span id="currentPosition"> - × - </span>
+                        <span id="currentPosition"> ( - , - ) </span>
                     </td>
                     <td>
                         <span id="currentSize"> - × - </span>
@@ -125,7 +125,7 @@
             </tfoot>
         </table>
         <div id="testText"></div>
-        <div id="moveButtons" style="display: block;">
+        <div id="moveButtons">
             <div id="top">
                 <button id="moveTopLeft" title="TopLeft">↖</button>
                 <button id="moveTop" title="Top">↑</button>
@@ -142,7 +142,11 @@
                 <button id="moveBottomRight" title="BottomRight">↘</button>
             </div>
         </div>
-        <div id="version" style="display: none;"></div>
+        <div id="displays"></div>
+        <div id="reset">
+            <button id="resetButton" class="settingsPanel"> 🔄️ Reset</button>
+        </div>
+        <div id="version"></div>
 
         <script src="presets.js"></script>
         <script src="windowInfo.js"></script>
