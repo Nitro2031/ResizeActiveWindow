@@ -18,6 +18,7 @@ const defaultPresets = {
 };
 
 function positionAdjustment(parameter) {
+    const preset = {};
     chrome.windows.getCurrent({}, (window) => {
         // 拡張機能が表示される右上を基準に表示画面の利用可能領域を取得
         const rightX = window.left + window.width;
@@ -65,14 +66,13 @@ function positionAdjustment(parameter) {
             if (newTop + targetHeight > screenTop + screenHeight + windowThickness) {
                 newTop = screenTop + screenHeight - targetHeight + windowThickness;
             }
-            return {
-                width: targetWidth,
-                height: targetHeight,
-                left: newLeft,
-                top: newTop
-            };
+            preset.width = targetWidth;
+            preset.height = targetHeight;
+            preset.left = newLeft;
+            preset.top = newTop;
         });
     });
+    return preset;
 }
 
 /** Resize the current window to specified width and height
