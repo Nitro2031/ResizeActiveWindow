@@ -1,6 +1,6 @@
 // presets.js
 
-// Data structure to hold preset dimensions
+// Default presets if none are stored
 const defaultPresets = {
     presets: [{
         width: 816,
@@ -17,12 +17,17 @@ const defaultPresets = {
     }]
 };
 
-function positionAdjustment(parameter) {
-    const preset = {};
+/** Resize the current window to specified width and height
+ * アクティブなウィンドウを指定サイズにリサイズする
+ * @param {{width: number, height: number}} parameter - New dimensions of the window
+ * @returns {void}
+ */
+function windowResize(parameter) {
     chrome.windows.getCurrent({}, (window) => {
         // 拡張機能が表示される右上を基準に表示画面の利用可能領域を取得
         const rightX = window.left + window.width;
         const topY = window.top;
+        const preset = {};
         chrome.system.display.getInfo((displays) => {
             // 右上座標が属するディスプレイを探す
             const targetDisplay = displays.find(d => {
@@ -71,27 +76,14 @@ function positionAdjustment(parameter) {
             preset.left = newLeft;
             preset.top = newTop;
         });
+        testText({ preset });
+        console.log({ preset });
+
+        chrome.windows.update(
+            window.id,
+            preset
+        );
     });
-    return preset;
-}
-
-/** Resize the current window to specified width and height
- * アクティブなウィンドウを指定サイズにリサイズする
- * @param {{width: number, height: number}} parameter - New dimensions of the window
- * @returns {void}
- */
-function windowResize(parameter) {
-    const preset = positionAdjustment(parameter);
-
-    chrome.windows.update(
-        window.id,
-        {
-            width: preset.width,
-            height: preset.height,
-            left: preset.left,
-            top: preset.top
-        }
-    );
 }
 
 /** Create a preset button and append it to the container
@@ -99,12 +91,12 @@ function windowResize(parameter) {
  * @param {HTMLElement} container - Container to append the button to
  * @returns {void}
  */
-function createPresetButton(parameter, index) {
+function createPresetButton(parameter, index, data) {
     const presetBtn = document.createElement("button");
     presetBtn.textContent = `${parameter.width} × ${parameter.height}`;
     presetBtn.className = "preset";
     presetBtn.onclick = () => {
-        windowResize(parameter.width, parameter.height);
+        windowResize(parameter);
     };
     const td = document.createElement("td");
     td.appendChild(presetBtn);
@@ -132,19 +124,21 @@ function createPresetButton(parameter, index) {
  */
 function renderPresets() {
     chrome.storage.local.get({ presets: [] }, (data) => {
+        let presets;
         if (data.presets.length === 0) {
             // デフォルトプリセットを作成
-            chrome.storage.local.set({
-                presets: data.presets.concat(this.data.presets)
-            }, renderPresets);
+            presets = defaultPresets.presets;
+            chrome.storage.local.set({ presets }, renderPresets);
         } else {
-            const container = document.getElementById("presets");
-            container.innerHTML = "";
-            data.presets.forEach((parameter, index) => {
-                const tr = createPreset(parameter, index);
-                container.appendChild(tr);
-            });
+            presets = data.presets;
+
         }
+        const container = document.getElementById("presets");
+        container.innerHTML = ""; // 既存の内容をクリア
+        presets.forEach((parameter, index) => {
+            const tr = createPresetButton(parameter, index, data);
+            container.appendChild(tr);
+        });
     });
 }
 
@@ -159,7 +153,7 @@ function renderSettings(highlightIndex = -1) {
         const listRow = document.getElementById("presetList");
         listRow.innerHTML = "";
         data.presets.forEach((parameter, index) => {
-            const tr = createPreset(parameter, index);
+            const tr = createPresetButton(parameter, index, data);
             listRow.appendChild(tr);
 
             // 直近追加された行をハイライト
