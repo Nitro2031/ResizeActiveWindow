@@ -22,7 +22,7 @@ button {
 }
 */
 #moveButtons {
-    margin-top: 8px;
+    margin: auto;
 }
 
 #displaySize,
@@ -74,13 +74,13 @@ td {
 
 #resetButton {
     text-align: center;
-    margin-top: 8px;
+    margin: auto;
     background-color: #FF4C4C;
     color: white;
     padding: 2px 4px;
     font-weight: bold;
     cursor: pointer;
-    border-radius: 2px;
+    border-radius: 8px;
 }
 
 #resetButton:hover {

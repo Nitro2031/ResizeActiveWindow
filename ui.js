@@ -13,9 +13,10 @@ function handleSettingsButton() {
             element.style.display = "block";
         });
         Array.from(
-            document.getElementsByClassName("deletePreset")
+            document.getElementsByClassName("delete")
         ).forEach(element => {
             element.disabled = false;
+            element.style.display = "inline-block";
         });
         renderSettings();
     }
@@ -36,9 +37,10 @@ function handleReturnButton() {
             element.style.display = "none";
         });
         Array.from(
-            document.getElementsByClassName("deletePreset")
+            document.getElementsByClassName("delete")
         ).forEach(element => {
             element.disabled = true;
+            element.style.display = "none";
         });
         renderPresets();
     };

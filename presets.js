@@ -37,6 +37,17 @@ function getDisplays() {
     });
 }
 
+/** Helper function to set storage as a Promise
+ * ローカルストレージへの保存をPromiseで実行
+ * @param {Object} data - Data to store
+ * @return {Promise<void>}
+ */
+function setStorage(data) {
+    return new Promise(resolve => {
+        chrome.storage.local.set(data, resolve);
+    });
+}
+
 /** Resize the current window to specified width and height
  * アクティブなウィンドウを指定サイズにリサイズする
  * @param {{width: number, height: number}} parameter - New dimensions of the window
@@ -129,11 +140,13 @@ function createPresetButton(parameter, index, data) {
     td.appendChild(presetBtn);
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = " 🗑️ Delete";
-    deleteBtn.className = "deletePreset";
-    deleteBtn.onclick = () => {
+    deleteBtn.className = "delete";
+    deleteBtn.onclick = async () => {
         data.presets.splice(index, 1); // 削除ボタンを押した行を配列から削除
         // 変更をローカルストレージに保存し、設定パネルを再レンダリング
-        chrome.storage.local.set({ presets: data.presets }, renderSettings);
+        await setStorage(data).then(() => {
+            renderSettings();
+        });
     };
     const tdDelete = document.createElement("td");
     tdDelete.appendChild(deleteBtn);

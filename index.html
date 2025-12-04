@@ -117,30 +117,38 @@
         <div id="testText"></div>
         <div id="displays"></div>
 
-        <div id="controlPanel">
-            <span id="reset" style="float:left">
-                <button id="resetButton" class="settingsPanel"> 🔄️ Reset</button>
-            </span>
+        <table id="controlPanel">
+            <tr>
+                <td style="text-align: center;">
+                    <div id="reset">
+                        <span> </span>
+                        <button id="resetButton" class="settingsPanel" style="white-space: nowrap;"> 🔄️ Reset </button>
+                        <span> </span>
+                    </div>
 
-            <span id="moveButtons" style="float:left">
-                <div id="top">
-                    <button id="moveTopLeft" title="TopLeft">↖</button>
-                    <button id="moveTop" title="Top">↑</button>
-                    <button id="moveTopRight" title="TopRight">↗</button>
-                </div>
-                <div id="middle">
-                    <button id="moveLeft" title="Left">←</button>
-                    <button id="moveCenter" title="Center">×</button>
-                    <button id="moveRight" title="Right">→</button>
-                </div>
-                <div id="bottom">
-                    <button id="moveBottomLeft" title="BottomLeft">↙</button>
-                    <button id="moveBottom" title="Bottom">↓</button>
-                    <button id="moveBottomRight" title="BottomRight">↘</button>
-                </div>
-            </span>
-            <span id="version" style="float:right"></span>
-        </div>
+                    <span id="moveButtons">
+                        <div id="top">
+                            <button id="moveTopLeft" title="TopLeft">↖</button>
+                            <button id="moveTop" title="Top">↑</button>
+                            <button id="moveTopRight" title="TopRight">↗</button>
+                        </div>
+                        <div id="middle">
+                            <button id="moveLeft" title="Left">←</button>
+                            <button id="moveCenter" title="Center">×</button>
+                            <button id="moveRight" title="Right">→</button>
+                        </div>
+                        <div id="bottom">
+                            <button id="moveBottomLeft" title="BottomLeft">↙</button>
+                            <button id="moveBottom" title="Bottom">↓</button>
+                            <button id="moveBottomRight" title="BottomRight">↘</button>
+                        </div>
+                    </span>
+                </td>
+                <td>
+                    <span id="version"></span>
+                </td>
+            </tr>
+        </table>
 
         <script src="presets.js"></script>
         <script src="windowInfo.js"></script>
