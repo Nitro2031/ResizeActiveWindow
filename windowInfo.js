@@ -1,14 +1,7 @@
-const windowFrameThickness = -8; // Windows のタスクバー分ではなく、ウィンドウ枠の厚さを考慮
-
-/** Test function to display text in the popup
- * @param {string} textContent - text to display
- * @returns {void}
- */
-function testText(textContent) {
-    document.getElementById("testText").textContent = textContent;
-}
+const windowThickness = 8; // Windows のタスクバー分ではなく、ウィンドウ枠の厚さを考慮
 
 /** Move the current window to a specified position
+ * アクティブなウィンドウを指定位置に移動する
  * @param {string} position - "left", "right", "top", or "bottom"
  * @returns {void}
  */
@@ -34,42 +27,42 @@ function moveWindow(position) {
 
             switch (position) {
                 case "topLeft":
-                    newLeft = b.left + windowFrameThickness;
-                    newTop = b.top + windowFrameThickness;
+                    newLeft = b.left - windowThickness;
+                    newTop = b.top - windowThickness;
                     break;
                 case "topRight":
                     newLeft = b.left + b.width - window.width
-                        - windowFrameThickness;
-                    newTop = b.top + windowFrameThickness;
+                        + windowThickness;
+                    newTop = b.top - windowThickness;
                     break;
                 case "bottomLeft":
-                    newLeft = b.left + windowFrameThickness;
+                    newLeft = b.left - windowThickness;
                     newTop = b.top + b.height - window.height
-                        + windowFrameThickness;
+                        - windowThickness;
                     break;
                 case "bottomRight":
                     newLeft = b.left + b.width - window.width
-                        - windowFrameThickness;
+                        - windowThickness;
                     newTop = b.top + b.height - window.height
-                        + windowFrameThickness;
+                        - windowThickness;
                     break;
                 case "center":
                     newLeft = b.left + Math.floor((b.width - window.width) / 2);
                     newTop = b.top + Math.floor((b.height - window.height) / 2);
                     break;
                 case "left":
-                    newLeft = b.left + windowFrameThickness;
+                    newLeft = b.left - windowThickness;
                     break;
                 case "right":
                     newLeft = b.left + b.width - window.width
-                        - windowFrameThickness;
+                        - windowThickness;
                     break;
                 case "top":
-                    newTop = b.top + windowFrameThickness;
+                    newTop = b.top - windowThickness;
                     break;
                 case "bottom":
                     newTop = b.top + b.height - window.height
-                        + windowFrameThickness;
+                        - windowThickness;
                     break;
             }
 
@@ -79,23 +72,24 @@ function moveWindow(position) {
 }
 
 /** Update and display current window size and position
+ * アクティブなウィンドウのサイズと位置を取得して表示する
  * @returns {void}
  */
 function updateWindowInfo() {
     let contentText = `- × -`;
-    chrome.windows.getCurrent({}, (win) => {
+    chrome.windows.getCurrent({}, (window) => {
         contentText =
-            `Size: ${win.width} × ${win.height}`;
+            `${window.width} × ${window.height}`;
         document.getElementById("currentSize").textContent = contentText;
         document.getElementById("currentPosition").textContent =
-            `Position: ${win.left} × ${win.top}`;
+            `${window.left} , ${window.top}`;
     });
 
     // タブの表示領域サイズ
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs[0]) {
             const url = tabs[0].url || "";
-            testText(url);
+            //testText(url);
 
             if (url.startsWith("chrome://") || url.startsWith("about:")) {
                 // 内部ページはスクリプト注入不可 → 表示領域サイズは取得しない
@@ -119,21 +113,49 @@ function updateWindowInfo() {
     });
 }
 
+/** Format display information as a string
+ * ディスプレイ情報を文字列化
+ * @param {Object} display - display object from chrome.system.display.getInfo
+ * @returns {string} formatted display information
+ */
+function displayInfo(display, number) {
+    const name = `Display${number}` + (display.name ? ` : ${display.name}` : "");
+    const bounds = display.bounds;
+    const position = `( ${bounds.left} , ${bounds.top} )`;
+    const size = `${bounds.width} x ${bounds.height}`;
+    return `<div class="displayInfo" style="text-align: left;">${name}</div><div class="displayInfo"> ${position} ${size}</div>`;
+}
+
 /** Display the current display size
+ * ディスプレイの表示領域サイズを表示する
  * @returns {void}
  */
 function showDisplaySize() {
     chrome.system.display.getInfo((displays) => {
         console.log({ displays });
+
+        // ディスプレイ情報の表示
+        const displayInfoDiv = document.getElementById("displays");
+        displayInfoDiv.innerHTML = "";
+        let displayInfoText = "";
         if (displays && displays.length > 0) {
+            let number = 1;
+            // 全ディスプレイ情報の取得
+            displays.forEach(display => {
+                //testText(JSON.stringify(display));
+                displayInfoText += displayInfo(display, number);
+                number++;
+            });
+
             // 現在のメインディスプレイを取得
             const primary = displays.find(d => d.isPrimary) || displays[0];
             const width = primary.bounds.width;
             const height = primary.bounds.height;
             testText({ primary, width, height });
 
-            document.getElementById("displaySize").textContent =
-                `Display: ${width} × ${height}`;
+            document.getElementById("displaySize").innerHTML =
+                `<tr><td>Display</td><td>Primary</td><td style="text-align: center;">${width} × ${height}</td></tr>`;
         }
+        displayInfoDiv.innerHTML = displayInfoText;
     });
 }
