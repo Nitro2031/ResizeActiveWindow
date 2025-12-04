@@ -42,7 +42,7 @@ function moveWindow(position) {
                     break;
                 case "bottomRight":
                     newLeft = b.left + b.width - window.width
-                        - windowThickness;
+                        + windowThickness;
                     newTop = b.top + b.height - window.height
                         - windowThickness;
                     break;
@@ -55,7 +55,7 @@ function moveWindow(position) {
                     break;
                 case "right":
                     newLeft = b.left + b.width - window.width
-                        - windowThickness;
+                        + windowThickness;
                     break;
                 case "top":
                     newTop = b.top - windowThickness;
