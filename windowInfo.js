@@ -114,30 +114,20 @@ function updateWindowInfo() {
 }
 
 /** Format display information as a string
- * ディスプレイ情報をdiv文字列化
- * @param {Object} display - display object from chrome.system.display.getInfo
- * @returns {string} formatted display information
- */
-function displayInfoDivText(display, number) {
-    const name = `Display${number}` + (display.name ? ` : ${display.name}` : "");
-    const bounds = display.bounds;
-    const position = `( ${bounds.left} , ${bounds.top} )`;
-    const size = `${bounds.width} x ${bounds.height}`;
-    return `<div class="displayInfo" style="text-align: left;">${name}</div><div class="displayInfo"> ${position} ${size}</div>`;
-}
-
-
-/** Format display information as a string
  * ディスプレイ情報をtbody文字列化
  * @param {Object} display - display object from chrome.system.display.getInfo
  * @returns {string} formatted display information
  */
 function displayInfo(display, number) {
-    const name = (display.name ? `${display.name}` : `Display${number}`);
+    const name = `<td style="text-align: left;">`
+        + (display.name ? `${display.name}` : `Display${number}`)
+        + `</td>`;
     const bounds = display.bounds;
-    const position = ` ( ${bounds.left} , ${bounds.top} )`;
-    const size = `${bounds.width} x ${bounds.height}`;
-    return `<tr><td style="text-align: left;">${name}</td><td style="text-align: left;">${number}${position}</td><td style="text-align: left;">${size}</td></tr>`;
+    const position = `<td style="text-align: left;">${number}`
+        + ` ( ${bounds.left} , ${bounds.top} )</td>`;
+    const size = `<td style="text-align: left;">${bounds.width}`
+        + ` × ${bounds.height}</td>`;
+    return `<tr>${name}${position}${size}</tr>`;
 }
 
 /** Display the current display size
@@ -149,7 +139,6 @@ function showDisplaySize() {
         console.log({ displays });
 
         // ディスプレイ情報の表示
-        //const displayInfoDiv = document.getElementById("displays");
         const displayInfoElement = document.getElementById("displaySize");
         displayInfoElement.innerHTML = "";
         let displayInfoText = "";
@@ -161,19 +150,7 @@ function showDisplaySize() {
                 displayInfoText += displayInfo(display, number);
                 number++;
             });
-
-            // 現在のメインディスプレイを取得
-            /*
-            const primary = displays.find(d => d.isPrimary) || displays[0];
-            const width = primary.bounds.width;
-            const height = primary.bounds.height;
-            testText({ primary, width, height });
-
-            document.getElementById("displaySize").innerHTML =
-                `<tr><td>Display</td><td>Primary</td><td style="text-align: center;">${width} × ${height}</td></tr>`;
-            */
-            displayInfoElement.innerHTML = displayInfoText;
         }
-        //displayInfoDiv.innerHTML = displayInfoText;
+        displayInfoElement.innerHTML = displayInfoText;
     });
 }
