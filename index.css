@@ -3,8 +3,8 @@ body {
 }
 
 button {
-    padding: 4px 8px;
-    margin: 4px;
+    padding: 1px 2px;
+    margin: 2px;
     white-space: nowrap;
 }
 
@@ -21,11 +21,13 @@ button {
     text-align: center;
 }
 */
+#moveButtons {
+    margin-top: 8px;
+}
 
 #displaySize,
 #currentPosition,
 #currentSize,
-#moveButtons,
 #version,
 #testText {
     margin-bottom: 5px;

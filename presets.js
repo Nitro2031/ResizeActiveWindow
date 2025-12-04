@@ -111,10 +111,12 @@ async function windowResize(parameter) {
     );
 }
 
-/** Create a preset button and append it to the container
+/** Create a preset button and append it to the tr container
+ * プリセットボタンを作成し、指定のコンテナに追加する
  * @param {{width: number, height: number}} parameter - Preset dimensions
- * @param {HTMLElement} container - Container to append the button to
- * @returns {void}
+ * @param {number} index - Index of the preset in the array
+ * @param {Object} data - Data object containing presets
+ * @returns {HTMLTableRowElement} - The created table row element
  */
 function createPresetButton(parameter, index, data) {
     const presetBtn = document.createElement("button");
@@ -211,5 +213,16 @@ function addPreset() {
         chrome.storage.local.set({ presets: data.presets }, () => {
             renderSettings(newIndex); // 追加された行だけハイライト
         });
+    });
+}
+
+/** Reset presets to default values
+ * プリセットをデフォルト値にリセット
+ * @returns {void}
+ */
+function resetPresets() {
+    chrome.storage.local.set(defaultPresets, () => {
+        renderPresets();
+        handleReturnButton();
     });
 }

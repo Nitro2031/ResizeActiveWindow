@@ -44,17 +44,6 @@ function handleReturnButton() {
     };
 }
 
-/** Reset presets to default values
- * プリセットをデフォルト値にリセット
- * @returns {void}
- */
-function resetPresets() {
-    chrome.storage.local.set(defaultPresets, () => {
-        renderPresets();
-        handleReturnButton();
-    });
-}
-
 /** Handle form submission to add a new preset
  * Handle add preset button click
  * フォーム全体で Enter キー押下時に値をプリセットへ追加
