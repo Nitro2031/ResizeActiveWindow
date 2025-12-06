@@ -1,16 +1,17 @@
 {
     "manifest_version": 3,
     "name": "Resize Active Window アクティブなブラウザウィンドウのサイズを変更",
-    "version": "1.2",
+    "version": "1.21",
     "permissions": [
         "windows",
         "storage",
         "activeTab",
-        "scripting"
+        "scripting",
+        "system.display"
     ],
     "action": {
         "default_popup": "index.html",
-        "default_title": "Resize Window"
+        "default_title": "Resize Active Window"
     },
     "icons": {
         "16": "icon-16x16.png",

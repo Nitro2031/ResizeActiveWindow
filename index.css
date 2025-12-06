@@ -1,10 +1,10 @@
 body {
-    margin: 10px;
+    margin: 8px;
 }
 
 button {
-    padding: 5px 10px;
-    margin: 5px;
+    padding: 4px 8px;
+    margin: 4px;
     white-space: nowrap;
 }
 
@@ -12,25 +12,58 @@ button {
     float: right;
 }
 
+#reset {
+    float: left;
+    /* 赤で強調 */
+    background-color: #FF4C4C;
+    /* 文字色は白でコントラスト確保 */
+    color: white;
+    font-weight: bold;
+    border-radius: 2px;
+    padding: 2px 4px;
+}
+
+.settingsPanel {
+    display: none;
+}
+
+#reset:hover {
+    /* ホバー時にさらに濃い赤 */
+    background-color: #CC0000;
+}
+
 #presets,
 #btn {
-    margin: 5px 0;
+    margin: 4px 0;
     text-align: center;
+}
+
+.nowrap {
+    margin-bottom: 4px;
+    font-size: small;
+    white-space: nowrap;
+}
+
+#testText {
+    white-space: pre-wrap;
+}
+
+.displayInfo {
+    font-size: small;
+    white-space: nowrap;
+    text-align: right;
 }
 
 #currentPosition,
 #currentSize,
-#version,
-#testText {
-    display: block;
-    margin-bottom: 5px;
+#version {
     font-size: small;
     white-space: nowrap;
     text-align: right;
 }
 
 input[type="number"] {
-    width: 50px;
+    width: 64px;
 }
 
 table {
@@ -51,7 +84,7 @@ td {
 }
 
 .highlight {
-    background-color: black;
+    background-color: rgb(127, 255, 192);
     color: white;
     transition: background-color 0.5s, color 0.5s;
 }

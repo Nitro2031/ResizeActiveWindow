@@ -1,4 +1,22 @@
+const windowThickness = 8; // ウィンドウ枠の厚さを考慮
+const presets = {
+    presets: [{
+        width: 816,
+        height: 568
+    }, {
+        width: 1040,
+        height: 756
+    }, {
+        width: 1296,
+        height: 768
+    }, {
+        width: 1936,
+        height: 1048
+    }]
+};
+
 /** Render the preset buttons
+ * プリセットボタンの表示と動作設定
  * Each button resizes the current window to the preset dimensions
  * Also handles settings panel for adding/removing presets
  * Uses chrome.storage.local to persist presets
@@ -7,33 +25,88 @@
 function renderPresets() {
     chrome.storage.local.get({ presets: [] }, (data) => {
         if (data.presets.length === 0) {
-            chrome.storage.local.set({ presets: [{ width: 800, height: 600 }] }, renderPresets);
+            chrome.storage.local.set(presets, renderPresets);
         } else {
             const container = document.getElementById("presets");
-            container.innerHTML = "";
+            container.innerHTML = ""; // 既存の内容をクリア
+            container.appendChild(document.createElement("hr"));
             data.presets.forEach((parameter) => {
                 const presetBtn = document.createElement("button");
                 presetBtn.textContent = `${parameter.width}x${parameter.height}`;
                 presetBtn.className = "preset";
                 presetBtn.onclick = () => {
                     chrome.windows.getCurrent({}, (window) => {
-                        const newLeft = window.left + window.width - parameter.width;
-                        chrome.windows.update(
-                            window.id,
-                            {
-                                width: parameter.width,
-                                height: parameter.height,
-                                left: newLeft
-                            });
+                        // 拡張機能が表示される右上を基準に表示画面の利用可能領域を取得
+                        const rightX = window.left + window.width;
+                        const topY = window.top;
+                        chrome.system.display.getInfo((displays) => {
+                            // 右上座標が属するディスプレイを探す
+                            const targetDisplay = displays.find(d => {
+                                const bounds = d.bounds;
+                                //testText(JSON.stringify(bounds));
+                                return rightX >= bounds.left + windowThickness + 1 &&
+                                    rightX <= bounds.left + bounds.width + windowThickness + 1 &&
+                                    topY >= bounds.top - windowThickness - 1 &&
+                                    topY <= bounds.top + bounds.height - windowThickness - 1;
+                            }) || displays[0]; // 見つからなければプライマリ
+                            // 画面の利用可能領域(除くタスクバー)を取得
+                            const screenWidth = targetDisplay.workArea.width;
+                            const screenHeight = targetDisplay.workArea.height;
+                            const screenLeft = targetDisplay.workArea.left;
+                            const screenTop = targetDisplay.workArea.top;
+                            //testText(JSON.stringify(targetDisplay.workArea));
+
+                            // サイズ上限補正
+                            let targetWidth = parameter.width;
+                            let targetHeight = parameter.height;
+                            if (targetWidth > screenWidth + windowThickness * 2) targetWidth = screenWidth + windowThickness * 2;
+                            if (targetHeight > screenHeight + windowThickness * 2) targetHeight = screenHeight + windowThickness * 2;
+
+                            // 位置補正（拡張機能ボタンがある右上基準）
+                            let newLeft = window.left + window.width - targetWidth;
+                            let newTop = window.top - windowThickness;
+
+                            // 画面左にはみ出さないように調整
+                            if (newLeft < screenLeft - windowThickness) {
+                                newLeft = screenLeft - windowThickness;
+                            }
+                            // 画面上にはみ出さないように調整
+                            if (newTop < screenTop - windowThickness) {
+                                newTop = screenTop - windowThickness;
+                            }
+                            // 画面右にはみ出さないように調整
+                            if (newLeft + targetWidth > screenLeft + screenWidth + windowThickness) {
+                                newLeft = screenLeft + screenWidth - targetWidth + windowThickness;
+                            }
+                            // 画面下にはみ出さないように調整
+                            if (newTop + targetHeight > screenTop + screenHeight + windowThickness) {
+                                newTop = screenTop + screenHeight - targetHeight + windowThickness;
+                            }
+
+                            // ウィンドウサイズと位置を変更
+                            chrome.windows.update(
+                                window.id,
+                                {
+                                    width: targetWidth,
+                                    height: targetHeight,
+                                    left: newLeft,
+                                    top: newTop
+                                }
+                            );
+                        });
                     });
                 };
                 container.appendChild(presetBtn);
+                const br = document.createElement("br");
+                container.appendChild(br);
             });
+            container.appendChild(document.createElement("hr"));
         }
     });
 }
 
 /** Render the settings panel for managing presets
+ * 設定画面のプリセットボタン一覧を表示
  * @returns {void}
  */
 function renderSettings(highlightIndex = null) {
@@ -41,10 +114,8 @@ function renderSettings(highlightIndex = null) {
         const listRow = document.getElementById("presetList");
         listRow.innerHTML = "";
         data.presets.forEach((p, i) => {
-            const tdWidth = document.createElement("td");
-            tdWidth.textContent = p.width;
-            const tdHeight = document.createElement("td");
-            tdHeight.textContent = p.height;
+            const td = document.createElement("td");
+            td.textContent = p.width + " × " + p.height;
             const tdDelete = document.createElement("td");
             const deleteBtn = document.createElement("button");
             deleteBtn.textContent = " 🗑️ Delete";
@@ -55,8 +126,7 @@ function renderSettings(highlightIndex = null) {
             tdDelete.appendChild(deleteBtn);
 
             const tr = document.createElement("tr");
-            tr.appendChild(tdWidth);
-            tr.appendChild(tdHeight);
+            tr.appendChild(td);
             tr.appendChild(tdDelete);
             listRow.appendChild(tr);
 
@@ -72,6 +142,7 @@ function renderSettings(highlightIndex = null) {
 }
 
 /** Add a new preset from input fields
+ * 新しいプリセットボタンを追加
  * @returns {void}
  */
 function addPreset() {
@@ -88,7 +159,7 @@ function addPreset() {
     });
 }
 
-/** フォーム全体で Enter キーを拾う
+/** フォーム全体で Enter キーを拾い、プリセットボタン保存を呼び出す
  * @returns {void}
  */
 document.getElementById("presetForm").addEventListener("submit", (e) => {
@@ -97,27 +168,52 @@ document.getElementById("presetForm").addEventListener("submit", (e) => {
 });
 
 /** Handle settings button click
+ * 設定ボタンのクリックで設定画面呼び出し
  * @returns {void}
  */
 document.getElementById("settings").onclick = () => {
     document.getElementById("presets").style.display = "none";
     document.getElementById("btn").style.display = "none";
-    document.getElementById("settingsPanel").style.display = "block";
+    Array.from(
+        document.getElementsByClassName("settingsPanel")
+    ).forEach(el => el.style.display = "block");
     renderSettings();
 };
 
 /** Handle back button click
+ * 設定画面で戻るボタンからメニュー画面へ切り替え
  * @returns {void}
  */
 document.getElementById("back").onclick = () => {
     document.getElementById("presets").style.display = "block";
     document.getElementById("btn").style.display = "block";
-    document.getElementById("settingsPanel").style.display = "none";
+    Array.from(
+        document.getElementsByClassName("settingsPanel")
+    ).forEach(el => el.style.display = "none");
     renderPresets();
 };
 
+/** Promisified version of chrome.storage.local.set
+ * chrome.storage.local.set の Promise 版
+ * @param {Object} data - data to store
+ * @returns {Promise<void>} Promise that resolves when set is complete
+ */
+function setStorageAsync(data) {
+    return new Promise(resolve => {
+        chrome.storage.local.set(data, resolve);
+    });
+}
+
+// Reset ボタンのクリック処理
+document.getElementById("reset").onclick = async () => {
+    // ストレージを初期化
+    await setStorageAsync(presets);
+    // 設定画面を再描画
+    renderSettings();
+};
+
 /** Handle add preset button click
- * Add ボタンのクリックでも呼び出し
+ * Add ボタンのクリックでもプリセットボタン保存を呼び出す
  * @returns {void}
  */
 document.getElementById("addPreset").onclick = (e) => {
@@ -126,25 +222,30 @@ document.getElementById("addPreset").onclick = (e) => {
 };
 
 /** Update and display current window size and position
+ * ウィンドウのサイズと位置を取得して表示
  * @returns {void}
  */
 function updateWindowInfo() {
     let contentText = `- × -`;
     chrome.windows.getCurrent({}, (win) => {
         contentText =
-            `Size: ${win.width} × ${win.height}`;
+            ` ${win.width} × ${win.height}`;
         document.getElementById("currentSize").textContent = contentText;
         document.getElementById("currentPosition").textContent =
-            `Position: ${win.left} × ${win.top}`;
+            `Window: ( ${win.left} , ${win.top} ) `;
     });
 
     // タブの表示領域サイズ
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs[0]) {
             const url = tabs[0].url || "";
-            testText(url);
+            //testText(url);
 
-            if (url.startsWith("chrome://") || url.startsWith("about:")) {
+            if (url.startsWith("chrome://")
+                || url.startsWith("about:")
+                || url.startsWith("chrome-extension://")
+                || url.startsWith("edge://")
+            ) {
                 // 内部ページはスクリプト注入不可 → 表示領域サイズは取得しない
                 contentText += " | Content: (not accessible)";
             } else {
@@ -167,23 +268,53 @@ function updateWindowInfo() {
 }
 
 /** Test function to display text in the popup
+ * テスト用関数：ポップアップ内にテキスト表示
  * @param {string} textContent - text to display
  * @returns {void}
  */
 function testText(textContent) {
-    //document.getElementById("testText").textContent = textContent;
+    document.getElementById("testText").textContent = textContent;
+}
+
+/** Format display information as a string
+ * ディスプレイ情報を文字列化
+ * @param {Object} display - display object from chrome.system.display.getInfo
+ * @returns {string} formatted display information
+ */
+function displayInfo(display) {
+    const name = display.name || `Display${display.id}`;
+    const bounds = display.bounds;
+    const position = `(${bounds.left}, ${bounds.top})`;
+    const size = `${bounds.width} x ${bounds.height}`;
+    return `<div class="displayInfo">${name} : ${position} ${size}</div>`;
 }
 
 /** Main function to initialize the popup
+ * ポップアップの初期化処理
  * @returns {void}
  */
 function main() {
     updateWindowInfo();
     chrome.windows.onBoundsChanged.addListener(updateWindowInfo);
     renderPresets();
+
+    // ディスプレイ情報の表示
+    chrome.system.display.getInfo((displays) => {
+        const displayInfoDiv = document.getElementById("displays");
+        displayInfoDiv.innerHTML = "";
+        let displayInfoText = "";
+        displays.forEach(display => {
+            //testText(JSON.stringify(display));
+            displayInfoText += displayInfo(display);
+        });
+        displayInfoDiv.innerHTML = displayInfoText;
+    });
+
     // バージョン情報の表示
     const manifest = chrome.runtime.getManifest();
-    document.getElementById("version").textContent = `${manifest.name} Version: ${manifest.version}`;
+    const title = manifest.action.default_title || manifest.name;
+    const version = manifest.version;
+    document.getElementById("version").innerHTML = `${title}<br /> Version: ${version}`;
 }
 
 main();
