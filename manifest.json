@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Resize Active Window アクティブなブラウザウィンドウのサイズを変更",
-    "version": "1.21",
+    "version": "1.22",
     "permissions": [
         "windows",
         "storage",
