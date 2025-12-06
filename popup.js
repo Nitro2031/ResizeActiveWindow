@@ -64,7 +64,7 @@ function renderPresets() {
 
                             // 位置補正（拡張機能ボタンがある右上基準）
                             let newLeft = window.left + window.width - targetWidth;
-                            let newTop = window.top - windowThickness;
+                            let newTop = window.top;
 
                             // 画面左にはみ出さないように調整
                             if (newLeft < screenLeft - windowThickness) {
